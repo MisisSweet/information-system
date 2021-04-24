@@ -33,8 +33,6 @@ namespace information_system.Models.Data
                 if (user == null)
                 {
                     await userManager.CreateAsync(defaultUser, "123Pa$$word.");
-                    await userManager.AddToRoleAsync(defaultUser, Enums.Roles.Student.ToString());
-                    await userManager.AddToRoleAsync(defaultUser, Enums.Roles.Employee.ToString());
                     await userManager.AddToRoleAsync(defaultUser, Enums.Roles.SuperAdmin.ToString());
                 }
 

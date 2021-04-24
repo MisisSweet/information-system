@@ -15,7 +15,7 @@
                 <div class="form-check m-1">
                     <input type="hidden" asp-for="@Model[i].RoleId" />
                     <input type="hidden" asp-for="@Model[i].RoleName" />
-                    <input asp-for="@Model[i].Selected" class="form-check-input" />
+                    <input type="radio" asp-for="@Model[i].Selected" class="form-check-input" />
                     <label class="form-check-label" asp-for="@Model[i].Selected">
                         @Model[i].RoleName
                     </label>

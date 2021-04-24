@@ -1,4 +1,5 @@
-﻿using information_system.Models;
+﻿using information_system.Data;
+using information_system.Models;
 using information_system.Models.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -16,31 +17,18 @@ namespace information_system.Controllers
     {
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
-        public UserRolesController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager)
+        private readonly SystemContext _systemContext;
+        public UserRolesController(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SystemContext systemContext)
         {
             _roleManager = roleManager;
             _userManager = userManager;
+            _systemContext = systemContext;
         }
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.ToListAsync();
-            var userRolesViewModel = new List<UserRolesViewModel>();
-            foreach (User user in users)
-            {
-                var thisViewModel = new UserRolesViewModel();
-                thisViewModel.UserId = user.Id;
-                thisViewModel.Email = user.Email;
-                thisViewModel.FirstName = user.FirstName;
-                thisViewModel.LastName = user.LastName;
-                thisViewModel.Roles = await GetUserRoles(user);
-                userRolesViewModel.Add(thisViewModel);
-            }
-            return View(userRolesViewModel);
+            return View();
         }
-        private async Task<List<string>> GetUserRoles(User user)
-        {
-            return new List<string>(await _userManager.GetRolesAsync(user));
-        }
+       
         public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
@@ -93,6 +81,27 @@ namespace information_system.Controllers
                 return View(model);
             }
             return RedirectToAction("Index");
+        }
+        public IActionResult AddRole()
+        {
+            return Redirect("~/RoleManager/Index");
+        }
+        [HttpGet]
+        public async Task<JsonResult> ReturnUser()
+        {
+            List<User> user = _systemContext.Users.ToList();
+            List < UserRole > userRole= new List<UserRole>();
+            foreach (User ur in user)
+            {
+                List<string> roles = await _userManager.GetRolesAsync(ur) as List<string>;
+                string role = roles.Count > 0 ? roles[0] : "";
+                userRole.Add(new UserRole() { user = ur, role = role });
+            }
+            return Json(userRole);
+        }
+        private async Task<List<string>> GetUserRoles(User user)
+        {
+            return new List<string>(await _userManager.GetRolesAsync(user));
         }
     }
 }
