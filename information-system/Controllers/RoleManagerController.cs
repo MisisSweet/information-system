@@ -34,6 +34,10 @@ namespace information_system.Controllers
             }
             return RedirectToAction("Index");
         }
+        public IActionResult Back()
+        {
+            return RedirectToAction("Index", "UserRoles");
+        }
         
     }
 }

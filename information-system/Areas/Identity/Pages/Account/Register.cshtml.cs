@@ -60,7 +60,7 @@ namespace information_system.Areas.Identity.Pages.Account
             public string LastName { get; set; }
             [Required]
             [Display(Name = "Numder read ticket")]
-            public int NumderReadTicket { get; set; }
+            public string NumderReadTicket { get; set; }
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]

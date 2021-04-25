@@ -1,9 +1,4 @@
-﻿@model List<UserRolesViewModel>
-@{
-    ViewData["Title"] = "Index";
-    Layout = "~/Views/Shared/_Layout.cshtml";
-}
-<h1>Admin Panel</h1>
+﻿<h1>Admin Panel</h1>
 <form method="post">
     <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddRole">Role Manager</button>
     <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddUser">Create User</button>
@@ -49,10 +44,9 @@
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
-                            console.log(data);
-                            return `<a class="btn btn-primary" href="/UserRoles/Manage?userId=${data}">Manage Roles</a>
-                            <a class="btn btn-primary" href="/UserRoles/Delete?userId=${data}">Delete</a>
-                            <a class="btn btn-primary" href="/UserRoles/Edit?userId=${data}">Edit</a>`;
+                            return ` <a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
+                            <a class="btn btn-primary" href="/UserRoles/Manage?userId=${data}">Manage Roles</a>
+                            <a class="btn btn-primary" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>`;
                         }
                     }],
                     order: [[1, 'asc']]

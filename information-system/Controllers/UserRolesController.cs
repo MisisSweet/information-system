@@ -1,10 +1,12 @@
 ﻿using information_system.Data;
+using information_system.Enums;
 using information_system.Models;
 using information_system.Models.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -99,9 +101,115 @@ namespace information_system.Controllers
             }
             return Json(userRole);
         }
-        private async Task<List<string>> GetUserRoles(User user)
+        public IActionResult AddUser()
         {
-            return new List<string>(await _userManager.GetRolesAsync(user));
+            return RedirectToAction("CreateUser");
+        }
+        public IActionResult CreateUser()
+        {
+            return View();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(CreateUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = new User {
+                    UserName = model.Username,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    NumderReadTicket=model.NumderReadTicket
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, model.Role);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> EditUser(string userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            EditUserViewModel model = new EditUserViewModel { 
+                Id=userId,
+                Email=user.Email,
+                Username=user.UserName,
+                FirstName=user.FirstName,
+                LastName=user.LastName,
+                NumderReadTicket=user.NumderReadTicket,
+                PhoneNumber=user.PhoneNumber,
+                ProfilePicture=user.ProfilePicture
+            };
+            return View(model);
+        }
+        [HttpGet]
+        public JsonResult GetAllRole()
+        {
+            string[] types = Enum.GetNames(typeof(Roles));
+            int[] values = Enum.GetValues(typeof(Roles)) as int[];
+            Dictionary<string, int> result = new Dictionary<string, int>();
+            for (int i = 0; i < types.Length; i++)
+            {
+                result.Add(types[i], values[i]);
+            }
+            return Json(result);
+        }
+        public IActionResult Back()
+        {
+            return RedirectToAction("Index");
+        }
+        public async Task<IActionResult> Edit(EditUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userManager.FindByIdAsync(model.Id);
+                if (user != null)
+                {
+                    user.Email = model.Email;
+                    user.UserName = model.Username;
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.NumderReadTicket = model.NumderReadTicket;
+                    user.PhoneNumber = model.PhoneNumber;
+                    user.ProfilePicture = model.ProfilePicture;
+
+                    var result = await _userManager.UpdateAsync(user);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+            }
+            return View(model);
+        }
+        [HttpGet]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            //TODO: в будущем доработать
+            User user = await _userManager.FindByIdAsync(userId);
+            await _userManager.DeleteAsync(user);
+            return RedirectToAction("Index");
         }
     }
 }

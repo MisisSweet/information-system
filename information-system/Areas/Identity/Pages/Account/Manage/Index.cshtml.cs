@@ -45,7 +45,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Username")]
             public string Username { get; set; }
             [Display(Name = "Numder read ticket")]
-            public int NumderReadTicket { get; set; }
+            public string NumderReadTicket { get; set; }
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
