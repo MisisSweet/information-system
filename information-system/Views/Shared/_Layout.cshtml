@@ -24,6 +24,7 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     @if (SignInManager.IsSignedIn(User))
+                    {
                         @if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.SuperAdmin.ToString()))
                         {
                             <ul class="navbar-nav flex-grow-1">
@@ -32,8 +33,16 @@
                                 </li>
                             </ul>
                         }
-
-                    </div>
+                        @if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.Employee.ToString()))
+                        {
+                            <ul class="navbar-nav flex-grow-1">
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="EmployeePanel" asp-action="Index">Admin Panel</a>
+                                </li>
+                            </ul>
+                        }
+                    }
+                </div>
                 </div>
             </nav>
         </header>

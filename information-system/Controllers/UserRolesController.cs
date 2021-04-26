@@ -211,5 +211,58 @@ namespace information_system.Controllers
             await _userManager.DeleteAsync(user);
             return RedirectToAction("Index");
         }
+
+        public  async Task<IActionResult> EditP(string userId)
+        {
+            User user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+            EditLoginPasswordViewModel model = new EditLoginPasswordViewModel
+            {
+                Id = userId,
+                Email = user.Email,
+                Username = user.UserName,
+                
+            };
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditPas(EditLoginPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                User user = await _userManager.FindByIdAsync(model.Id);
+                if (user != null)
+                {
+                    var _passwordValidator =
+                HttpContext.RequestServices.GetService(typeof(IPasswordValidator<User>)) as IPasswordValidator<User>;
+                    var _passwordHasher =
+                        HttpContext.RequestServices.GetService(typeof(IPasswordHasher<User>)) as IPasswordHasher<User>;
+
+                    IdentityResult result =
+                        await _passwordValidator.ValidateAsync(_userManager, user, model.Password);
+                    if (result.Succeeded)
+                    {
+                        user.PasswordHash = _passwordHasher.HashPassword(user, model.Password);
+                        await _userManager.UpdateAsync(user);
+                        return RedirectToAction("Index");
+                    }
+                    else
+                    {
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Пользователь не найден");
+                }
+            }
+            return View(model);
+        }
     }
 }
