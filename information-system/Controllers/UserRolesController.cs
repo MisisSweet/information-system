@@ -101,6 +101,12 @@ namespace information_system.Controllers
             }
             return Json(userRole);
         }
+        [HttpGet]
+        public JsonResult ReturnBook()
+        {
+            List<Book> book = _systemContext.Books.ToList();
+            return Json(book);
+        }
         public IActionResult AddUser()
         {
             return RedirectToAction("CreateUser");
@@ -263,6 +269,22 @@ namespace information_system.Controllers
                 }
             }
             return View(model);
+        }
+        public IActionResult AddGenre()
+        {
+            return RedirectToAction("Index", "GenreManage");
+        }
+        public IActionResult AddBook()
+        {
+            return RedirectToAction("CreateBook");
+        }
+        public IActionResult CreateBook()
+        {
+            return View();
+        }
+        public IActionResult AddStatus()
+        {
+            return RedirectToAction("Index", "StatusManager");
         }
     }
 }

@@ -1,0 +1,34 @@
+﻿@model List<Status>
+@{
+    ViewData["Title"] = "Role Manager";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<h1>Status Manager</h1>
+<form method="post" asp-action="AddStatus" asp-controller="StatusManager">
+    <div class="input-group">
+        <input name="statusName" class="form-control w-25">
+        <span class="input-group-btn">
+            <button class="btn btn-info">Add New Status</button>
+        </span>
+    </div>
+</form>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Id</th>
+            <th>Genre</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.Id</td>
+                <td>@role.StatusName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<form method="post" asp-controller="StatusManager" asp-action="Back">
+    <button class="btn btn-primary">Back</button>
+</form>
