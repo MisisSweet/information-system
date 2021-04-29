@@ -27,7 +27,7 @@ namespace information_system.Models
         public string NumderReadTicket { get; set; }
         public string PhoneNumber { get; set; }
         [Display(Name = "Profile Picture")]
-        public byte[] ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
         
     }
 }

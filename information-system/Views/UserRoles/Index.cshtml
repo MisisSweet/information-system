@@ -92,10 +92,10 @@
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
-                            return ` <a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
-                            <a class="btn btn-primary" href="/UserRoles/Manage?userId=${data}">Manage Genre</a>
-                            <a class="btn btn-primary" href="/UserRoles/Manage?userId=${data}">Manage Status</a>
-                            <a class="btn btn-primary" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>`;
+                            return ` <a class="btn btn-primary" href="/UserRoles/EditB?userId=${data}">Edit</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageG?userId=${data}">Manage Genre</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageS?userId=${data}">Manage Status</a>
+                            <a class="btn btn-primary" href="@Url.Action("DeleteBook","UserRoles")?userId=${data}">Delete</a>`;
                         }
                     }],
                     order: [[1, 'asc']]

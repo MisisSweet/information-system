@@ -2,10 +2,13 @@
 using information_system.Enums;
 using information_system.Models;
 using information_system.Models.Data;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -16,11 +19,13 @@ namespace information_system.Controllers
         private readonly UserManager<User> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SystemContext _systemContext;
-        public EmployeePanel(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SystemContext systemContext)
+        private readonly IWebHostEnvironment _appEnvironment;
+        public EmployeePanel(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, SystemContext systemContext, IWebHostEnvironment appEnvironment)
         {
             _roleManager = roleManager;
             _userManager = userManager;
             _systemContext = systemContext;
+            _appEnvironment = appEnvironment;
         }
         public IActionResult Index()
         {
@@ -97,7 +102,7 @@ namespace information_system.Controllers
         {
             return RedirectToAction("Index");
         }
-        public async Task<IActionResult> Edit(EditUserViewModel model)
+        public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -110,7 +115,15 @@ namespace information_system.Controllers
                     user.LastName = model.LastName;
                     user.NumderReadTicket = model.NumderReadTicket;
                     user.PhoneNumber = model.PhoneNumber;
-                    user.ProfilePicture = model.ProfilePicture;
+
+                    string path = @"/files/img/" + user.UserName + Path.GetExtension(file.FileName);
+                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.OpenOrCreate))
+                    {
+                        if (!string.IsNullOrEmpty(user.ProfilePicture))
+                            System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+                        await file.CopyToAsync(fileStream);
+                        user.ProfilePicture = path;
+                    }
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)

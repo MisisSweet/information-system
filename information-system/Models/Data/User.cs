@@ -12,6 +12,6 @@ namespace information_system.Models.Data
         public string LastName { get; set; }
         public int UsernameChangeLimit { get; set; } = 10;
         public string NumderReadTicket { get; set; }
-        public byte[] ProfilePicture { get; set; }
+        public string ProfilePicture { get; set; }
     }
 }

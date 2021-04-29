@@ -14,6 +14,8 @@ namespace information_system.Models.Data
         public int Year { get; set; }
         public string Articl { get; set; }
         public int StatusId { get; set; }
+        //public string BookPicture { get; set; }
+        //public int Count { get; set; }
 
         public virtual Status Status { get; set; }
     }

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using information_system.Models.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -16,13 +17,16 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IWebHostEnvironment _appEnvironment;
 
         public IndexModel(
             UserManager<User> userManager,
-            SignInManager<User> signInManager)
+            SignInManager<User> signInManager,
+            IWebHostEnvironment appEnvironment)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _appEnvironment = appEnvironment;
         }
 
         public string Username { get; set; }
@@ -50,7 +54,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
             [Display(Name = "Profile Picture")]
-            public byte[] ProfilePicture { get; set; }
+            public string ProfilePicture { get; set; }
         }
 
         private async Task LoadAsync(User user)
@@ -130,10 +134,13 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             if (Request.Form.Files.Count > 0)
             {
                 IFormFile file = Request.Form.Files.FirstOrDefault();
-                using (var dataStream = new MemoryStream())
+                string path = @"/files/img/"+user.UserName+Path.GetExtension(file.FileName);
+                using(var fileStream = new FileStream(_appEnvironment.WebRootPath+path, FileMode.OpenOrCreate))
                 {
-                    await file.CopyToAsync(dataStream);
-                    user.ProfilePicture = dataStream.ToArray();
+                    if(!string.IsNullOrEmpty(user.ProfilePicture))
+                        System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+                    await file.CopyToAsync(fileStream);
+                    user.ProfilePicture = path;
                 }
                 await _userManager.UpdateAsync(user);
             }
