@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,7 +36,7 @@ namespace information_system.Controllers
         {
             return View();
         }
-       
+
         public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
@@ -97,7 +98,7 @@ namespace information_system.Controllers
         public async Task<JsonResult> ReturnUser()
         {
             List<User> user = _systemContext.Users.ToList();
-            List < UserRole > userRole= new List<UserRole>();
+            List<UserRole> userRole = new List<UserRole>();
             foreach (User ur in user)
             {
                 List<string> roles = await _userManager.GetRolesAsync(ur) as List<string>;
@@ -109,7 +110,8 @@ namespace information_system.Controllers
         [HttpGet]
         public JsonResult ReturnBook()
         {
-            List<Book> book = _systemContext.Books.ToList();
+            List<Book> book = _systemContext.Books.Include(b=>b.Status)
+                .Include(b=>b.BookGenres).ThenInclude(bk=>bk.Genre).ToList();
             return Json(book);
         }
         public IActionResult AddUser()
@@ -125,11 +127,12 @@ namespace information_system.Controllers
         {
             if (ModelState.IsValid)
             {
-                User user = new User {
+                User user = new User
+                {
                     UserName = model.Username,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    NumderReadTicket=model.NumderReadTicket
+                    NumderReadTicket = model.NumderReadTicket
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -155,15 +158,16 @@ namespace information_system.Controllers
             {
                 return NotFound();
             }
-            EditUserViewModel model = new EditUserViewModel { 
-                Id=userId,
-                Email=user.Email,
-                Username=user.UserName,
-                FirstName=user.FirstName,
-                LastName=user.LastName,
-                NumderReadTicket=user.NumderReadTicket,
-                PhoneNumber=user.PhoneNumber,
-                ProfilePicture=user.ProfilePicture
+            EditUserViewModel model = new EditUserViewModel
+            {
+                Id = userId,
+                Email = user.Email,
+                Username = user.UserName,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                NumderReadTicket = user.NumderReadTicket,
+                PhoneNumber = user.PhoneNumber,
+                ProfilePicture = user.ProfilePicture
             };
             return View(model);
         }
@@ -198,10 +202,10 @@ namespace information_system.Controllers
                     user.PhoneNumber = model.PhoneNumber;
 
                     string path = @"/files/img/" + user.UserName + Path.GetExtension(file.FileName);
-                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.OpenOrCreate))
+                    if (!string.IsNullOrEmpty(user.ProfilePicture))
+                        System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                     {
-                        if (!string.IsNullOrEmpty(user.ProfilePicture))
-                            System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
                         await file.CopyToAsync(fileStream);
                         user.ProfilePicture = path;
                     }
@@ -230,8 +234,7 @@ namespace information_system.Controllers
             await _userManager.DeleteAsync(user);
             return RedirectToAction("Index");
         }
-
-        public  async Task<IActionResult> EditP(string userId)
+        public async Task<IActionResult> EditP(string userId)
         {
             User user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -243,7 +246,7 @@ namespace information_system.Controllers
                 Id = userId,
                 Email = user.Email,
                 Username = user.UserName,
-                
+
             };
             return View(model);
         }
@@ -293,19 +296,109 @@ namespace information_system.Controllers
         }
         public IActionResult CreateBook()
         {
-            return View();
+            return View(new CreateBookViewModel());
+        }
+        public async Task<IActionResult> CreateB(CreateBookViewModel model, IFormFile file)
+        {
+            if (ModelState.IsValid)
+            {
+                string[] _genre = (from t in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Genre) select t["value"]).ToArray();
+                List<Genre> genres = _systemContext.Genres.Where(g => _genre.Contains(g.GenreName)).ToList();
+
+                Book book = new Book
+                {
+                    Name = model.BookName,
+                    Author = model.Author,
+                    Articl = model.Articl,
+                    Description = model.Description,
+                    Year = model.Year,
+                };
+
+                Status status = _systemContext.Statuses.FirstOrDefault(c => c.StatusName.ToLower().Contains("в наличии"));
+                if (status == null)
+                    status = _systemContext.Statuses.First();
+
+                book.Status = status;
+
+                string path = "";
+                if (!string.IsNullOrEmpty(book.BookPicture))
+                    System.IO.File.Delete(_appEnvironment.WebRootPath + book.BookPicture);
+                if (file != null)
+                {
+                    path = @"/files/book/" + book.Name + Path.GetExtension(file.FileName);
+                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.OpenOrCreate))
+                    {
+                        await file.CopyToAsync(fileStream);
+                    }
+                }
+                book.BookPicture = path;
+
+                _systemContext.Add(book);
+                
+                foreach(Genre genre in genres)
+                {
+                    _systemContext.BookGenres.Add(new BookGenre() { Book = book, Genre = genre });
+                }
+                
+                _systemContext.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
         }
         public IActionResult AddStatus()
         {
             return RedirectToAction("Index", "StatusManager");
         }
-        public IActionResult EditB()
+        public IActionResult EditBook(int bookId)
         {
-            return RedirectToAction("EditBook");
+            Book book = _systemContext.Books.Find(bookId);
+            if (book == null)
+            {
+                return NotFound();
+            }
+            EditBookViewModel model = new EditBookViewModel
+            {
+                Id = bookId,
+                BookName = book.Name,
+                Author = book.Author,
+                Articl = book.Articl,
+                Description = book.Description,
+                Year = book.Year,
+                BookPicture = book.BookPicture
+            };
+            return View(model);
         }
-        public IActionResult EditBook()
+        public async Task<IActionResult> EditB(EditBookViewModel model, IFormFile file)
         {
-            return View();
+            if (ModelState.IsValid)
+            {
+                Book book = _systemContext.Books.Find(model.Id);
+                if (book != null)
+                {
+                    book.Name = model.BookName;
+                    book.Author = model.Author;
+                    book.Articl = model.Articl;
+                    book.Description = model.Description;
+                    book.Year = model.Year;
+
+                    string path = model.BookPicture;
+                    if (!string.IsNullOrEmpty(book.BookPicture))
+                        System.IO.File.Delete(_appEnvironment.WebRootPath + book.BookPicture);
+                    if (file != null)
+                    {
+                        path = @"/files/book/" + book.Name + Path.GetExtension(file.FileName);
+
+                        using(var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+                    }
+                    book.BookPicture = path;
+                    _systemContext.SaveChanges();
+                    return RedirectToAction("Index");
+                }
+            }
+            return View(model);
         }
         public IActionResult ManageG()
         {
@@ -323,9 +416,17 @@ namespace information_system.Controllers
         {
             return View();
         }
-        public IActionResult DeleteBook()
+        public IActionResult DeleteBook(int bookId)
         {
-            return View();
+            Book book = _systemContext.Books.FirstOrDefault(b => b.Id == bookId);
+            _systemContext.Entry(book).State = EntityState.Deleted;
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public JsonResult GetGenre()
+        {
+            return Json(_systemContext.Genres.ToArray());
         }
     }
 }

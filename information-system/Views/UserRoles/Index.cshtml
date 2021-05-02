@@ -26,10 +26,13 @@
     <table class="table table-striped" id="tableb">
         <thead>
             <tr>
+                <th>Picture</th>
                 <th>Book Name</th>
                 <th>Autor</th>
                 <th>Year</th>
                 <th>Articl</th>
+                <th>Genre</th>
+                <th>Status</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -77,27 +80,45 @@
             type: "Get",
             url: '@Url.Action("ReturnBook", "UserRoles")',
             success: function (data) {
-                console.log(data);
+                console.log({data});
                 $('#tableb').DataTable({
                     data: data,
                     columns: [
+                        { data: 'bookPicture' },
                         { data: 'name' },
                         { data: 'author' },
                         { data: 'year' },
                         { data: 'articl' },
-                        { data: 'id'}
+                        { data: 'bookGenres' },
+                        { data: 'status.statusName' },
+                        { data: 'id' },
                     ],
                     columnDefs: [{
-                        targets: 4,
+                        targets: 7,
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
-                            return ` <a class="btn btn-primary" href="/UserRoles/EditB?userId=${data}">Edit</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageG?userId=${data}">Manage Genre</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageS?userId=${data}">Manage Status</a>
-                            <a class="btn btn-primary" href="@Url.Action("DeleteBook","UserRoles")?userId=${data}">Delete</a>`;
+                            return ` <a class="btn btn-primary" href="/UserRoles/EditBook?bookId=${data}">Edit</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageG?bookId=${data}">Manage Genre</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageS?bookId=${data}">Manage Status</a>
+                            <a class="btn btn-primary" href="@Url.Action("DeleteBook", "UserRoles")?bookId=${data}">Delete</a>`;
                         }
-                    }],
+                    },
+                        {
+                            targets: 0,
+                            orderable: false,
+                            render: function (data, type, row, meta) {
+                                return `<img style="width:40px;height:40px; object-fit:cover; border-radius:30px" src="${data}"/>`;
+                            }
+                        },
+                        {
+                            targets: 5,
+                            orderable: false,
+                            render: function (data, type, row, meta) {
+                                console.log(data)
+                                return `${data.map(item=>item.genre.genreName)}`;
+                            }
+                        }],
                     order: [[1, 'asc']]
                 })
             }

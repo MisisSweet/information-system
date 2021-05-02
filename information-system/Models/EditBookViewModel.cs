@@ -6,8 +6,9 @@ using System.Threading.Tasks;
 
 namespace information_system.Models
 {
-    public class CreateBookViewModel
+    public class EditBookViewModel
     {
+        public int Id { get; set; }
         [Required]
         [Display(Name = "BookName")]
         public string BookName { get; set; }
@@ -23,8 +24,7 @@ namespace information_system.Models
         [Required]
         [Display(Name = "Articl")]
         public string Articl { get; set; }
-        [Display(Name ="Book picture")]
+        [Display(Name = "Book picture")]
         public string BookPicture { get; set; }
-        public string Genre { get; set; }
     }
 }
