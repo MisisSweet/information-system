@@ -1,5 +1,32 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model List<ManageGenreViewModel>
 @{
+    ViewData["Title"] = "Manage";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+<form method="post">
+    <div class="card">
+        <div class="card-header">
+            <h2>Manage Book</h2>
+            Add/Remove Book for Book / @ViewBag.BookName.
+        </div>
+        <div class="card-body">
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                <div class="form-check m-1">
+                    <input type="hidden" asp-for="@Model[i].GenreId" />
+                    <input type="hidden" asp-for="@Model[i].GenreName" />
+                    <input asp-for="@Model[i].Selected" class="form-check-input" />
+                    <label class="form-check-label" asp-for="@Model[i].Selected">
+                        @Model[i].GenreName
+                    </label>
+                </div>
+            }
+            <div asp-validation-summary="All" class="text-danger"></div>
+        </div>
+        <div class="card-footer">
+            <input type="submit" value="Update" class="btn btn-primary"
+                   style="width:auto" />
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+        </div>
+    </div>
+</form>

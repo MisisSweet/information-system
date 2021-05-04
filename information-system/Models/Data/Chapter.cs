@@ -11,7 +11,6 @@ namespace information_system.Models.Data
         public int BookId { get; set; }
         public int NumberChapter { get; set; }
         public string Name { get; set; }
-        public string Text { get; set; }
 
         public virtual Book Book { get; set; }
     }

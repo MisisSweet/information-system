@@ -400,21 +400,59 @@ namespace information_system.Controllers
             }
             return View(model);
         }
-        public IActionResult ManageG()
+        public IActionResult ManageGenre(int bookId)
         {
-            return RedirectToAction("ManageGenre");
+            ViewBag.bookId = bookId;
+            var book = _systemContext.Books.Include(g=>g.BookGenres).ThenInclude(g=>g.Genre).FirstOrDefault(c => c.Id == bookId);
+            if (book == null)
+            {
+                ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
+                return View("NotFound");
+            }
+            ViewBag.BookName = book.Name;
+            var model = new List<ManageGenreViewModel>();
+            List<String> genres = book.BookGenres.Select(c => c.Genre.GenreName).ToList();
+            foreach (var genre in _systemContext.Genres)
+            {
+                var manageGenreViewModel = new ManageGenreViewModel
+                {
+                    GenreId = genre.Id,
+                    GenreName = genre.GenreName
+                };
+                if (genres.Contains(genre.GenreName))
+                {
+                    manageGenreViewModel.Selected = true;
+                }
+                else
+                {
+                    manageGenreViewModel.Selected = false;
+                }
+                model.Add(manageGenreViewModel);
+            }
+            return View(model);
         }
-        public IActionResult ManageGenre()
+        public IActionResult ManageStatus(int bookId)
         {
-            return View();
-        }
-        public IActionResult ManageS()
-        {
-            return RedirectToAction("ManageStatus");
-        }
-        public IActionResult ManageStatus()
-        {
-            return View();
+            ViewBag.bookId = bookId;
+            var book = _systemContext.Books.FirstOrDefault(c => c.Id == bookId);
+            if (book == null)
+            {
+                ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
+                return View("NotFound");
+            }
+            ViewBag.BookName = book.Name;
+            var model = new List<ManageStatusViewModel>();
+            foreach (var status in _systemContext.Statuses)
+            {
+                var manageStatusViewModel = new ManageStatusViewModel
+                {
+                    StatusId = status.Id,
+                    StatusName = status.StatusName,
+                    Selected = status.StatusName.Equals(book.Status.StatusName),
+                };
+                model.Add(manageStatusViewModel);
+            }
+            return View(model);
         }
         public IActionResult DeleteBook(int bookId)
         {

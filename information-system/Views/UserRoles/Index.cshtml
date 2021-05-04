@@ -99,8 +99,8 @@
                         className: 'button',
                         render: function (data, type, row, meta) {
                             return ` <a class="btn btn-primary" href="/UserRoles/EditBook?bookId=${data}">Edit</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageG?bookId=${data}">Manage Genre</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageS?bookId=${data}">Manage Status</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageGenre?bookId=${data}">Manage Genre</a>
+                            <a class="btn btn-primary" href="/UserRoles/ManageStatus?bookId=${data}">Manage Status</a>
                             <a class="btn btn-primary" href="@Url.Action("DeleteBook", "UserRoles")?bookId=${data}">Delete</a>`;
                         }
                     },
