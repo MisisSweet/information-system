@@ -110,8 +110,8 @@ namespace information_system.Controllers
         [HttpGet]
         public JsonResult ReturnBook()
         {
-            List<Book> book = _systemContext.Books.Include(b=>b.Status)
-                .Include(b=>b.BookGenres).ThenInclude(bk=>bk.Genre).ToList();
+            List<Book> book = _systemContext.Books.Include(b => b.Status)
+                .Include(b => b.BookGenres).ThenInclude(bk => bk.Genre).ToList();
             return Json(book);
         }
         public IActionResult AddUser()
@@ -314,6 +314,18 @@ namespace information_system.Controllers
                     Year = model.Year,
                 };
 
+                List<Chapter> chapters = new List<Chapter>();
+                for (int i = 0; i < model.Chapters.Count; i++)
+                {
+                    chapters.Add(new Chapter()
+                    {
+                        Book = book,
+                        Name = model.Chapters[i],
+                        NumberChapter = i
+                    });
+                }
+                book.Chapters = chapters;
+
                 Status status = _systemContext.Statuses.FirstOrDefault(c => c.StatusName.ToLower().Contains("в наличии"));
                 if (status == null)
                     status = _systemContext.Statuses.First();
@@ -325,7 +337,7 @@ namespace information_system.Controllers
                     System.IO.File.Delete(_appEnvironment.WebRootPath + book.BookPicture);
                 if (file != null)
                 {
-                    path = @"/files/book/" + book.Name + Path.GetExtension(file.FileName);
+                    path = @"/files/book/" + book.Name + DateTime.Now.ToString("ddMMyyyyHHmmss") + Path.GetExtension(file.FileName);
                     using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.OpenOrCreate))
                     {
                         await file.CopyToAsync(fileStream);
@@ -334,12 +346,12 @@ namespace information_system.Controllers
                 book.BookPicture = path;
 
                 _systemContext.Add(book);
-                
-                foreach(Genre genre in genres)
+
+                foreach (Genre genre in genres)
                 {
                     _systemContext.BookGenres.Add(new BookGenre() { Book = book, Genre = genre });
                 }
-                
+
                 _systemContext.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -351,7 +363,7 @@ namespace information_system.Controllers
         }
         public IActionResult EditBook(int bookId)
         {
-            Book book = _systemContext.Books.Find(bookId);
+            Book book = _systemContext.Books.Include(b => b.Chapters).FirstOrDefault(b => b.Id == bookId);
             if (book == null)
             {
                 return NotFound();
@@ -364,7 +376,8 @@ namespace information_system.Controllers
                 Articl = book.Articl,
                 Description = book.Description,
                 Year = book.Year,
-                BookPicture = book.BookPicture
+                BookPicture = book.BookPicture,
+                Chapters = book.Chapters.Select(c => c.Name).ToList()
             };
             return View(model);
         }
@@ -372,7 +385,7 @@ namespace information_system.Controllers
         {
             if (ModelState.IsValid)
             {
-                Book book = _systemContext.Books.Find(model.Id);
+                Book book = _systemContext.Books.Include(b => b.Chapters).FirstOrDefault(b => b.Id == model.Id);
                 if (book != null)
                 {
                     book.Name = model.BookName;
@@ -381,20 +394,51 @@ namespace information_system.Controllers
                     book.Description = model.Description;
                     book.Year = model.Year;
 
-                    string path = model.BookPicture;
-                    if (!string.IsNullOrEmpty(book.BookPicture))
+                    string path = book.BookPicture;
+                    if (!string.IsNullOrEmpty(book.BookPicture) && file!=null)
                         System.IO.File.Delete(_appEnvironment.WebRootPath + book.BookPicture);
                     if (file != null)
                     {
-                        path = @"/files/book/" + book.Name + Path.GetExtension(file.FileName);
+                        path = @"/files/book/" + book.Name + DateTime.Now.ToString("ddMMyyyyHHmmss") + Path.GetExtension(file.FileName);
 
-                        using(var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                        using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
                         {
                             await file.CopyToAsync(fileStream);
                         }
                     }
                     book.BookPicture = path;
-                    _systemContext.SaveChanges();
+
+                    bool isDelete = book.Chapters.Count > model.Chapters.Count;
+                    bool isAdd = model.Chapters.Count > book.Chapters.Count;
+                    int count = Math.Abs(model.Chapters.Count - book.Chapters.Count);
+                    int length = Math.Min(model.Chapters.Count, book.Chapters.Count);
+
+                    for (int i = 0; i < length; i++)
+                    {
+                        book.Chapters.ToList()[i].Name = model.Chapters[i];
+                    }
+                    if (isDelete)
+                    {
+                        for (int i = length; i < length + count; i++)
+                        {
+                            Chapter c = book.Chapters.ToList()[i];
+                            _systemContext.Entry(c).State = EntityState.Deleted;
+
+                        }
+                    }
+                    if (isAdd)
+                    {
+                        for (int i = length; i < length + count; i++)
+                        {
+                            book.Chapters.Add(new Chapter()
+                            {
+                                Book = book,
+                                Name = model.Chapters[i],
+                                NumberChapter = i
+                            });
+                        }
+                    }
+                        _systemContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
@@ -403,7 +447,7 @@ namespace information_system.Controllers
         public IActionResult ManageGenre(int bookId)
         {
             ViewBag.bookId = bookId;
-            var book = _systemContext.Books.Include(g=>g.BookGenres).ThenInclude(g=>g.Genre).FirstOrDefault(c => c.Id == bookId);
+            var book = _systemContext.Books.Include(g => g.BookGenres).ThenInclude(g => g.Genre).FirstOrDefault(c => c.Id == bookId);
             if (book == null)
             {
                 ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";

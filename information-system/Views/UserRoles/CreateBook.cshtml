@@ -36,27 +36,33 @@
             </div>
             <button type="submit" class="btn btn-primary" asp-action="CreateB">Create</button>
         </div>
-            <div class="col-md-6">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="form-group">
-                    <label asp-for="BookPicture" style="width: 100%;"></label>
-                    @if (Model.BookPicture != null)
-                    {
-                        <img id="profilePicture" style="width:250px;height:350px; object-fit:cover" src="@Model.BookPicture">
-                    }
-                    else
-                    {
-                        <img id="profilePicture" style="width:250px;height:350px; object-fit:cover" src="">
-                    }
-                    <input type="file"
-                           accept=".png,.jpg,.jpeg,.gif,.tif"
-                           name="file"
-                           class="form-control"
-                           style="border:0px!important;padding: 0px;padding-top: 10px;padding-bottom: 30px;"
-                           onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
-                    <span asp-validation-for="BookPicture" class="text-danger"></span>
-                </div>
+        <div class="col-md-4">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="BookPicture" style="width: 100%;"></label>
+                @if (Model.BookPicture != null)
+                {
+                    <img id="profilePicture" style="width:250px;height:350px; object-fit:cover" src="@Model.BookPicture">
+                }
+                else
+                {
+                    <img id="profilePicture" style="width:250px;height:350px; object-fit:cover" src="">
+                }
+                <input type="file"
+                       accept=".png,.jpg,.jpeg,.gif,.tif"
+                       name="file"
+                       class="form-control"
+                       style="border:0px!important;padding: 0px;padding-top: 10px;padding-bottom: 30px;"
+                       onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                <span asp-validation-for="BookPicture" class="text-danger"></span>
             </div>
+        </div>
+
+        <div class="d-flex flex-column">
+            <button class="btn btn-primary" type="button" onclick="addChapter()">Add chapter</button>
+            <div id="chapter-container" class="d-flex flex-column">
+            </div>
+        </div>
     </div>
 </form>
 <script src="~/lib/jquery/dist/jquery.js"></script>
@@ -79,4 +85,28 @@
         })
     }
     loadGenre();
+
+    function addChapter() {
+        $('#chapter-container').append(`
+        <div class="d-flex mt-2 mb-2 justify-content-between">
+            <input class="form-control" type="text" name="chapters" value=""/>
+            <button class="btn btn-primary" type="button" onclick="delChapter(this)">X</button>
+            <button class="btn btn-primary" type="button" onclick="moveUp(this)">↑</button>
+            <button class="btn btn-primary" type="button" onclick="moveDown(this)">↓</button>
+        </div>
+        `);
+    }
+    function delChapter(e) {
+        e.parentElement.remove();
+    }
+    function moveUp(element) {
+        element = element.parentElement;
+        if (element.previousElementSibling)
+            element.parentNode.insertBefore(element, element.previousElementSibling);
+    }
+    function moveDown(element) {
+        element = element.parentElement;
+        if (element.nextElementSibling)
+            element.parentNode.insertBefore(element.nextElementSibling, element);
+    }
 </script>
