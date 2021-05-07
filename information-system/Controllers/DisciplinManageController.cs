@@ -8,34 +8,33 @@ using System.Threading.Tasks;
 
 namespace information_system.Controllers
 {
-    public class GenreManageController : Controller
+    public class DisciplinManageController : Controller
     {
         private readonly SystemContext _systemContext;
 
-        public GenreManageController(SystemContext systemContext)
+        public DisciplinManageController(SystemContext systemContext)
         {
             _systemContext = systemContext;
         }
-
         public IActionResult Index()
         {
-            var genre = _systemContext.Genres.ToList();
-            return View(genre);
+            var disc = _systemContext.Disciplines.ToList();
+            return View(disc);
         }
         [HttpPost]
-        public IActionResult AddGenre(string genreName)
+        public IActionResult AddDiscipline(string discName)
         {
-            if (genreName != null)
+            if (discName != null)
             {
-                Genre newGenre = new Genre()
+                Discipline newDiscipline = new Discipline()
                 {
-                    GenreName = genreName
+                    NameDiscipline = discName
                 };
-                _systemContext.Genres.Add(newGenre);
+                _systemContext.Disciplines.Add(newDiscipline);
             }
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-       
+        
     }
 }

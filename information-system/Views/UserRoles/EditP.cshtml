@@ -8,13 +8,14 @@
             <div asp-validation-summary="All" class="text-danger"></div>
             <input asp-for="Id" type="hidden" />
             <input asp-for="Email" type="hidden" />
-            <input asp-for="Username" type="hidden"/>
+            <input asp-for="Username" type="hidden" />
             <div class="form-group">
                 <label asp-for="Password"></label>
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary" asp-action="EditPas">Edit</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
         </form>
     </div>
 </div>

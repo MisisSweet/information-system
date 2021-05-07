@@ -26,6 +26,8 @@ namespace information_system.Models
         [Display(Name ="Book picture")]
         public string BookPicture { get; set; }
         public string Genre { get; set; }
+        public string Discipline { get; set; }
+        public string Specialty { get; set; }
         public List<string> Chapters { get; set; }
     }
 }

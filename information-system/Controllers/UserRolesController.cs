@@ -36,7 +36,6 @@ namespace information_system.Controllers
         {
             return View();
         }
-
         public async Task<IActionResult> Manage(string userId)
         {
             ViewBag.userId = userId;
@@ -90,10 +89,6 @@ namespace information_system.Controllers
             }
             return RedirectToAction("Index");
         }
-        public IActionResult AddRole()
-        {
-            return Redirect("~/RoleManager/Index");
-        }
         [HttpGet]
         public async Task<JsonResult> ReturnUser()
         {
@@ -111,12 +106,14 @@ namespace information_system.Controllers
         public JsonResult ReturnBook()
         {
             List<Book> book = _systemContext.Books.Include(b => b.Status)
-                .Include(b => b.BookGenres).ThenInclude(bk => bk.Genre).ToList();
+                .Include(b => b.BookGenres)
+                    .ThenInclude(bk => bk.Genre)
+                .Include(b=>b.BookDiscs)
+                    .ThenInclude(bd=>bd.Discipline)
+                .Include(b=>b.BookSpecs)
+                    .ThenInclude(bs=>bs.Specialty)
+                .ToList();
             return Json(book);
-        }
-        public IActionResult AddUser()
-        {
-            return RedirectToAction("CreateUser");
         }
         public IActionResult CreateUser()
         {
@@ -132,7 +129,8 @@ namespace information_system.Controllers
                     UserName = model.Username,
                     FirstName = model.FirstName,
                     LastName = model.LastName,
-                    NumderReadTicket = model.NumderReadTicket
+                    NumderReadTicket = model.NumderReadTicket,
+                    GroupNumber=model.GroupNumber
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -167,7 +165,8 @@ namespace information_system.Controllers
                 LastName = user.LastName,
                 NumderReadTicket = user.NumderReadTicket,
                 PhoneNumber = user.PhoneNumber,
-                ProfilePicture = user.ProfilePicture
+                ProfilePicture = user.ProfilePicture,
+                GroupNumber=user.GroupNumber
             };
             return View(model);
         }
@@ -182,10 +181,6 @@ namespace information_system.Controllers
                 result.Add(types[i], values[i]);
             }
             return Json(result);
-        }
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index");
         }
         public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
@@ -286,14 +281,6 @@ namespace information_system.Controllers
             }
             return View(model);
         }
-        public IActionResult AddGenre()
-        {
-            return RedirectToAction("Index", "GenreManage");
-        }
-        public IActionResult AddBook()
-        {
-            return RedirectToAction("CreateBook");
-        }
         public IActionResult CreateBook()
         {
             return View(new CreateBookViewModel());
@@ -303,7 +290,11 @@ namespace information_system.Controllers
             if (ModelState.IsValid)
             {
                 string[] _genre = (from t in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Genre) select t["value"]).ToArray();
+                string[] _specialty = (from s in JsonConvert.DeserializeObject<Dictionary<string,string>[]>(model.Specialty) select s["value"]).ToArray();
+                string[] _discipline = (from d in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Discipline) select d["value"]).ToArray();
                 List<Genre> genres = _systemContext.Genres.Where(g => _genre.Contains(g.GenreName)).ToList();
+                List<Specialty> specialties = _systemContext.Specialties.Where(s => _specialty.Contains(s.NameSpecialty)).ToList();
+                List<Discipline> disciplines = _systemContext.Disciplines.Where(d => _discipline.Contains(d.NameDiscipline)).ToList();
 
                 Book book = new Book
                 {
@@ -351,15 +342,18 @@ namespace information_system.Controllers
                 {
                     _systemContext.BookGenres.Add(new BookGenre() { Book = book, Genre = genre });
                 }
-
+                foreach(Discipline disc in disciplines)
+                {
+                    _systemContext.BookDiscs.Add(new BookDisc() { Book = book, Discipline = disc });
+                }
+                foreach(Specialty spec in specialties)
+                {
+                    _systemContext.BookSpecs.Add(new BookSpec() { Book = book, Specialty = spec });
+                }
                 _systemContext.SaveChanges();
                 return RedirectToAction("Index");
             }
             return RedirectToAction("Index");
-        }
-        public IActionResult AddStatus()
-        {
-            return RedirectToAction("Index", "StatusManager");
         }
         public IActionResult EditBook(int bookId)
         {
@@ -475,6 +469,32 @@ namespace information_system.Controllers
             }
             return View(model);
         }
+        [HttpPost]
+        public IActionResult ManageGenre(List<ManageGenreViewModel> model, int bookId)
+        {
+            var book = _systemContext.Books.Include(g => g.BookGenres).ThenInclude(g => g.Genre).FirstOrDefault(b=>b.Id==bookId);
+            if (book == null)
+            {
+                return View();
+            }
+            List<String> genres = book.BookGenres.Select(c => c.Genre.GenreName).ToList();
+            foreach(BookGenre bookGenre in book.BookGenres)
+            {
+                _systemContext.Entry(bookGenre).State = EntityState.Deleted;
+            }
+            var gen = model.Where(x => x.Selected).ToList();
+            foreach(var g in gen)
+            {
+                BookGenre newBookGenre = new BookGenre
+                {
+                    Book = book,
+                    GenreId=g.GenreId
+                };
+                _systemContext.BookGenres.Add(newBookGenre);
+            }
+            _systemContext.SaveChanges();
+            return RedirectToAction("EditBook", new { bookId= bookId });
+        }
         public IActionResult ManageStatus(int bookId)
         {
             ViewBag.bookId = bookId;
@@ -498,6 +518,134 @@ namespace information_system.Controllers
             }
             return View(model);
         }
+        [HttpPost]
+        public IActionResult ManageStatus(List<ManageStatusViewModel> model, int bookId)
+        {
+            var book = _systemContext.Books.FirstOrDefault(b => b.Id == bookId);
+            if (book == null)
+            {
+                return View();
+            }
+            var stat = model.Where(x => x.Selected).ToList()[0];
+            var status = _systemContext.Statuses.FirstOrDefault(s => s.Id == stat.StatusId);
+            book.Status = status;
+                _systemContext.SaveChanges();
+            return RedirectToAction("EditBook", new { bookId = bookId });
+        }
+        public IActionResult ManageDiscipline(int bookId)
+        {
+            ViewBag.bookId = bookId;
+            var book = _systemContext.Books.Include(d=>d.BookDiscs).ThenInclude(db=>db.Discipline).FirstOrDefault(c => c.Id == bookId);
+            if (book == null)
+            {
+                ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
+                return View("NotFound");
+            }
+            ViewBag.BookName = book.Name;
+            var model = new List<ManageDisciplineViewModel>();
+            List<String> disciplines = book.BookDiscs.Select(c => c.Discipline.NameDiscipline).ToList();
+            foreach (var discipline in _systemContext.Disciplines)
+            {
+                var manageDisciplineViewModel = new ManageDisciplineViewModel
+                {
+                    DisciplineId = discipline.Id,
+                    DisciplineName = discipline.NameDiscipline,
+                };
+                if (disciplines.Contains(discipline.NameDiscipline))
+                {
+                    manageDisciplineViewModel.Selected = true;
+                }
+                else
+                {
+                    manageDisciplineViewModel.Selected = false;
+                }
+                model.Add(manageDisciplineViewModel);
+            }
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult ManageDiscipline(List<ManageDisciplineViewModel> model, int bookId)
+        {
+            var book = _systemContext.Books.Include(g => g.BookDiscs).ThenInclude(g => g.Discipline).FirstOrDefault(b => b.Id == bookId);
+            if (book == null)
+            {
+                return View();
+            }
+            List<String> disciplines = book.BookDiscs.Select(c => c.Discipline.NameDiscipline).ToList();
+            foreach (BookDisc bookDisc in book.BookDiscs)
+            {
+                _systemContext.Entry(bookDisc).State = EntityState.Deleted;
+            }
+            var disc = model.Where(x => x.Selected).ToList();
+            foreach (var d in disc)
+            {
+                BookDisc newBookDisc = new BookDisc
+                {
+                    Book = book,
+                    DisciplineId=d.DisciplineId
+                };
+                _systemContext.BookDiscs.Add(newBookDisc);
+            }
+            _systemContext.SaveChanges();
+            return RedirectToAction("EditBook", new { bookId = bookId });
+        }
+        public IActionResult ManageSpecialty(int bookId)
+        {
+            ViewBag.bookId = bookId;
+            var book = _systemContext.Books.Include(b=>b.BookSpecs).ThenInclude(s=>s.Specialty).FirstOrDefault(c => c.Id == bookId);
+            if (book == null)
+            {
+                ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
+                return View("NotFound");
+            }
+            ViewBag.BookName = book.Name;
+            var model = new List<ManageSpecialtyViewModel>();
+            List<String> specialties = book.BookSpecs.Select(c => c.Specialty.NameSpecialty).ToList();
+            foreach (var specialty in _systemContext.Specialties)
+            {
+                var manageSpecialtyViewModel = new ManageSpecialtyViewModel
+                {
+                    SpecialtyId = specialty.Id,
+                    SpecialtyName = specialty.NameSpecialty,
+                };
+                if (specialties.Contains(specialty.NameSpecialty))
+                {
+                    manageSpecialtyViewModel.Selected = true;
+                }
+                else
+                {
+                    manageSpecialtyViewModel.Selected = false;
+                }
+                model.Add(manageSpecialtyViewModel);
+            }
+            return View(model);
+        }
+        [HttpPost]
+        public IActionResult ManageSpecialty(List<ManageSpecialtyViewModel> model, int bookId)
+        {
+            var book = _systemContext.Books.Include(g => g.BookSpecs).ThenInclude(g => g.Specialty).FirstOrDefault(b => b.Id == bookId);
+            if (book == null)
+            {
+                return View();
+            }
+            List<String> specialties = book.BookSpecs.Select(c => c.Specialty.NameSpecialty).ToList();
+            foreach (BookSpec bookSpec in book.BookSpecs)
+            {
+                _systemContext.Entry(bookSpec).State = EntityState.Deleted;
+            }
+            var spec = model.Where(x => x.Selected).ToList();
+            foreach (var s in spec)
+            {
+                BookSpec newBookSpec = new BookSpec
+                {
+                    Book = book,
+                    SpecialtyId=s.SpecialtyId
+                };
+                _systemContext.BookSpecs.Add(newBookSpec);
+            }
+            _systemContext.SaveChanges();
+            return RedirectToAction("EditBook", new { bookId = bookId });
+        }
         public IActionResult DeleteBook(int bookId)
         {
             Book book = _systemContext.Books.FirstOrDefault(b => b.Id == bookId);
@@ -509,6 +657,16 @@ namespace information_system.Controllers
         public JsonResult GetGenre()
         {
             return Json(_systemContext.Genres.ToArray());
+        }
+        [HttpGet]
+        public  JsonResult GetDiscipline()
+        {
+            return Json(_systemContext.Disciplines.ToArray());
+        }
+        [HttpGet]
+        public JsonResult GetSpecialty()
+        {
+            return Json(_systemContext.Specialties.ToArray());
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿<h1>Admin Panel</h1>
 <div>
     <form method="post">
-        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddRole">Role Manager</button>
-        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddUser">Create User</button>
+        <button type="submit" class="btn btn-info" asp-controller="RoleManager" asp-action="Index">Role Manager</button>
+        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="CreateUser">Create User</button>
     </form>
     <table class="table table-striped" id="tableu">
         <thead>
@@ -19,9 +19,11 @@
         </tbody>
     </table>
     <form method="post">
-        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddGenre">Genre Manager</button>
-        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddStatus">Status Manager</button>
-        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="AddBook">Create Book</button>
+        <button type="submit" class="btn btn-info" asp-controller="GenreManage" asp-action="Index">Genre Manager</button>
+        <button type="submit" class="btn btn-info" asp-controller="StatusManager" asp-action="Index">Status Manager</button>
+        <button type="submit" class="btn btn-info" asp-controller="DisciplinManage" asp-action="Index">Discipline Manager</button>
+        <button type="submit" class="btn btn-info" asp-controller="SpecialtyManage" asp-action="Index">Specialty Manager</button>
+        <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="CreateBook">Create Book</button>
     </form>
     <table class="table table-striped" id="tableb">
         <thead>
@@ -32,6 +34,8 @@
                 <th>Year</th>
                 <th>Articl</th>
                 <th>Genre</th>
+                <th>Discipline</th>
+                <th>Specialty</th>
                 <th>Status</th>
                 <th>Action</th>
             </tr>
@@ -68,8 +72,8 @@
                         render: function (data, type, row, meta) {
                             return ` <a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
                             <a class="btn btn-primary" href="/UserRoles/EditP?userId=${data}">Edit Pass</a>
-                            <a class="btn btn-primary" href="/UserRoles/Manage?userId=${data}">Manage Roles</a>
-                            <a class="btn btn-primary" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>`;
+                            <a class="btn btn-info" href="/UserRoles/Manage?userId=${data}">Manage Roles</a>
+                            <a class="btn btn-danger" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>`;
                         }
                     }],
                     order: [[1, 'asc']]
@@ -90,18 +94,18 @@
                         { data: 'year' },
                         { data: 'articl' },
                         { data: 'bookGenres' },
+                        { data: 'bookDiscs' },
+                        { data: 'bookSpecs' },
                         { data: 'status.statusName' },
                         { data: 'id' },
                     ],
                     columnDefs: [{
-                        targets: 7,
+                        targets: 9,
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
                             return ` <a class="btn btn-primary" href="/UserRoles/EditBook?bookId=${data}">Edit</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageGenre?bookId=${data}">Manage Genre</a>
-                            <a class="btn btn-primary" href="/UserRoles/ManageStatus?bookId=${data}">Manage Status</a>
-                            <a class="btn btn-primary" href="@Url.Action("DeleteBook", "UserRoles")?bookId=${data}">Delete</a>`;
+                            <a class="btn btn-danger" href="@Url.Action("DeleteBook", "UserRoles")?bookId=${data}">Delete</a>`;
                         }
                     },
                         {
@@ -118,7 +122,24 @@
                                 console.log(data)
                                 return `${data.map(item=>item.genre.genreName)}`;
                             }
-                        }],
+                        },
+                        {
+                            targets: 6,
+                            orderable: false,
+                            render: function (data, type, row, meta) {
+                                console.log(data)
+                                return `${data.map(item => item.discipline.nameDiscipline)}`;
+                            }
+                        },
+                        {
+                            targets: 7,
+                            orderable: false,
+                            render: function (data, type, row, meta) {
+                                console.log(data)
+                                return `${data.map(item => item.specialty.nameSpecialty)}`;
+                            }
+                        }
+                    ],
                     order: [[1, 'asc']]
                 })
             }

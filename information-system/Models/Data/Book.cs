@@ -20,5 +20,7 @@ namespace information_system.Models.Data
         public virtual Status Status { get; set; }
         public virtual ICollection<BookGenre> BookGenres { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
+        public virtual ICollection<BookDisc> BookDiscs { get; set; }
+        public virtual ICollection<BookSpec> BookSpecs { get; set; }
     }
 }   

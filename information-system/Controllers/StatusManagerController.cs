@@ -36,9 +36,6 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-        public IActionResult Back()
-        {
-            return RedirectToAction("Index", "UserRoles");
-        }
+        
     }
 }

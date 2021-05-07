@@ -16,8 +16,17 @@
                 <input asp-for="Author" class="form-control" />
                 <span asp-validation-for="Author" class="text-danger"></span>
             </div>
-            <div class="input-group ">
-                <input asp-for="Genre" name='genre' class='radius textbody'>
+            <div class="form-group ">
+                <label asp-for="Genre"></label>
+                <input asp-for="Genre" name='genre' class='textbody' style="border-radius: 5px !important">
+            </div>
+            <div class="form-group ">
+                <label asp-for="Discipline"></label>
+                <input asp-for="Discipline" name='discipline' class='textbody' style="border-radius: 5px !important">
+            </div>
+            <div class="form-group ">
+                <label asp-for="Specialty"></label>
+                <input asp-for="Specialty" name='specialty' class='textbody' style="border-radius: 5px !important">
             </div>
             <div class="form-group">
                 <label asp-for="Description"></label>
@@ -35,6 +44,7 @@
                 <span asp-validation-for="Articl" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-primary" asp-action="CreateB">Create</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
         </div>
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -59,7 +69,7 @@
         </div>
 
         <div class="d-flex flex-column">
-            <button class="btn btn-primary" type="button" onclick="addChapter()">Add chapter</button>
+            <button class="btn btn-info" type="button" onclick="addChapter()">Add chapter</button>
             <div id="chapter-container" class="d-flex flex-column">
             </div>
         </div>
@@ -69,7 +79,11 @@
 <script src="~/lib/tagify/tagify.min.js"></script>
 <script>
     var genres = [];
+    var disciplines = [];
+    var specialities = [];
     var inputG = document.querySelector('input[name=genre]');
+    var inputD = document.querySelector('input[name=discipline]');
+    var inputS = document.querySelector('input[name=specialty]')
     async function loadGenre() {
         var responseGenre = await fetch('@Url.Action("GetGenre","UserRoles")');
         genres = await responseGenre.json();
@@ -86,11 +100,43 @@
     }
     loadGenre();
 
+    async function loadDisciplene() {
+        var responseDiscipline = await fetch('@Url.Action("GetDiscipline", "UserRoles")');
+        disciplines = await responseDiscipline.json();
+        // init Tagify script on the above inputs
+        console.log(disciplines);
+        var tagify = new Tagify(inputD, {
+            whitelist: disciplines.map(function (item) { return item.nameDiscipline; }),
+            enforceWhitelist: true,
+            dropdown: {
+                position: "input",
+                enabled: 0 // always opens dropdown when input gets focus
+            }
+        })
+    }
+    loadDisciplene();
+
+    async function loadSpecialty() {
+        var responseSpecialty = await fetch('@Url.Action("GetSpecialty", "UserRoles")');
+        specialities = await responseSpecialty.json();
+        // init Tagify script on the above inputs
+        console.log(specialities);
+        var tagify = new Tagify(inputS, {
+            whitelist: specialities.map(function (item) { return item.nameSpecialty; }),
+            enforceWhitelist: true,
+            dropdown: {
+                position: "input",
+                enabled: 0 // always opens dropdown when input gets focus
+            }
+        })
+    }
+    loadSpecialty();
+
     function addChapter() {
         $('#chapter-container').append(`
         <div class="d-flex mt-2 mb-2 justify-content-between">
             <input class="form-control" type="text" name="chapters" value=""/>
-            <button class="btn btn-primary" type="button" onclick="delChapter(this)">X</button>
+            <button class="btn btn-danger" type="button" onclick="delChapter(this)">X</button>
             <button class="btn btn-primary" type="button" onclick="moveUp(this)">↑</button>
             <button class="btn btn-primary" type="button" onclick="moveDown(this)">↓</button>
         </div>

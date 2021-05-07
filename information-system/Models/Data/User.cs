@@ -13,5 +13,6 @@ namespace information_system.Models.Data
         public int UsernameChangeLimit { get; set; } = 10;
         public string NumderReadTicket { get; set; }
         public string ProfilePicture { get; set; }
+        public string GroupNumber { get; set; }
     }
 }

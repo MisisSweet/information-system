@@ -1,14 +1,14 @@
-﻿@model List<Microsoft.AspNetCore.Identity.IdentityRole>
+﻿@model List<Specialty>
 @{
     ViewData["Title"] = "Role Manager";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<h1>Role Manager</h1>
-<form method="post" asp-action="AddRole" asp-controller="RoleManager">
+<h1>Genre Manager</h1>
+<form method="post" asp-action="AddSpecialty" asp-controller="SpecialtyManage">
     <div class="input-group">
-        <input name="roleName" class="form-control w-25">
+        <input name="specName" class="form-control w-25">
         <span class="input-group-btn">
-            <button class="btn btn-info">Add New Role</button>
+            <button class="btn btn-info">Add New Specialty</button>
         </span>
     </div>
 </form>
@@ -16,7 +16,7 @@
     <thead>
         <tr>
             <th>Id</th>
-            <th>Role</th>
+            <th>Specialty</th>
         </tr>
     </thead>
     <tbody>
@@ -24,7 +24,7 @@
         {
             <tr>
                 <td>@role.Id</td>
-                <td>@role.Name</td>
+                <td>@role.NameSpecialty</td>
             </tr>
         }
     </tbody>

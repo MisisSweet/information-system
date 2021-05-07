@@ -36,7 +36,7 @@
                 <label asp-for="Role"></label>
                 <select id="role" asp-for="Role"></select>
             </div>*@
-            <button type="submit" class="btn btn-primary" asp-action="EditB">Edit</button>
+
         </div>
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -62,17 +62,29 @@
 
 
         <div class="d-flex flex-column">
-            <button class="btn btn-primary" type="button" onclick="addChapter()">Add chapter</button>
+            <button class="btn btn-info" type="button" onclick="addChapter()">Add chapter</button>
             <div id="chapter-container" class="d-flex flex-column">
                 @foreach (string c in Model.Chapters)
                 {
                     <div class="d-flex mt-2 mb-2 justify-content-between">
-                        <input class="form-control" type="text" name="chapters" value="@c"/>
-                        <button class="btn btn-primary" type="button" onclick="delChapter(this)">X</button>
+                        <input class="form-control" type="text" name="chapters" value="@c" />
+                        <button class="btn btn-danger" type="button" onclick="delChapter(this)">X</button>
                         <button class="btn btn-primary" type="button" onclick="moveUp(this)">↑</button>
                         <button class="btn btn-primary" type="button" onclick="moveDown(this)">↓</button>
                     </div>
                 }
+            </div>
+        </div>
+        <div class="flex-xl-column">
+            <div>
+                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageGenre" asp-route-bookId="@Model.Id">Manage Genre</button>
+                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageStatus" asp-route-bookId="@Model.Id">Manage Status</button>
+                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageDiscipline" asp-route-bookId="@Model.Id">Manage Discipline</button>
+                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageSpecialty" asp-route-bookId="@Model.Id">Manage Specialty</button>
+            </div>
+            <div class="mt-2">
+                <button type="submit" class="btn btn-primary" asp-action="EditB">Edit</button>
+                <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
             </div>
         </div>
     </div>
@@ -83,7 +95,7 @@
         $('#chapter-container').append(`
         <div class="d-flex mt-2 mb-2 justify-content-between">
             <input class="form-control" type="text" name="chapters" value=""/>
-            <button class="btn btn-primary" type="button" onclick="delChapter(this)">X</button>
+            <button class="btn btn-danger" type="button" onclick="delChapter(this)">X</button>
             <button class="btn btn-primary" type="button" onclick="moveUp(this)">↑</button>
             <button class="btn btn-primary" type="button" onclick="moveDown(this)">↓</button>
         </div>

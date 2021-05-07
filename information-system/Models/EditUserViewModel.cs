@@ -28,6 +28,7 @@ namespace information_system.Models
         public string PhoneNumber { get; set; }
         [Display(Name = "Profile Picture")]
         public string ProfilePicture { get; set; }
-        
+        [Display(Name = "Group Number")]
+        public string GroupNumber { get; set; }
     }
 }

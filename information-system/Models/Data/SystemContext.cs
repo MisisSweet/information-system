@@ -29,5 +29,9 @@ namespace information_system.Data
         public DbSet<BookGenre> BookGenres { get; set; }
         public DbSet<Chapter> Chapters { get; set;}
         public DbSet<Status> Statuses { get; set; }
+        public DbSet<Specialty> Specialties { get; set; }
+        public DbSet<Discipline> Disciplines { get; set; }
+        public DbSet<BookDisc> BookDiscs { get; set; }
+        public DbSet<BookSpec> BookSpecs { get; set; }
     }
 }

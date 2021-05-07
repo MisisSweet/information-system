@@ -32,5 +32,7 @@ namespace information_system.Models
         [Required]
         [Display(Name ="Role")]
         public string Role { get; set; }
+        [Display(Name = "Group Number")]
+        public string GroupNumber { get; set; }
     }
 }

@@ -55,6 +55,8 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
             [Display(Name = "Profile Picture")]
             public string ProfilePicture { get; set; }
+            [Display(Name = "Group Number")]
+            public string GroupNumber { get; set; }
         }
 
         private async Task LoadAsync(User user)
@@ -65,6 +67,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             var lastName = user.LastName;
             var profilePicture = user.ProfilePicture;
             var numberReadTicket = user.NumderReadTicket;
+            var groupNumber = user.GroupNumber;
             Username = userName;
             Input = new InputModel
             {
@@ -73,7 +76,8 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
                 FirstName = firstName,
                 LastName = lastName,
                 ProfilePicture = profilePicture,
-                NumderReadTicket=numberReadTicket
+                NumderReadTicket=numberReadTicket,
+                GroupNumber=groupNumber
             };
         }
 
@@ -116,6 +120,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             var firstName = user.FirstName;
             var lastName = user.LastName;
             var numderReadTicket = user.NumderReadTicket;
+            var groupNumber = user.GroupNumber;
             if (Input.FirstName != firstName)
             {
                 user.FirstName = Input.FirstName;
@@ -129,6 +134,11 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             if (Input.NumderReadTicket != numderReadTicket)
             {
                 user.NumderReadTicket = Input.NumderReadTicket;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.GroupNumber != groupNumber)
+            {
+                user.GroupNumber = Input.GroupNumber;
                 await _userManager.UpdateAsync(user);
             }
             if (Request.Form.Files.Count > 0)
