@@ -1,4 +1,4 @@
-﻿@model List<ManageUserRolesViewModel>
+﻿@model ManageUserRolesViewModel
 @{
     ViewData["Title"] = "Manage";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,14 +10,14 @@
             Add/Remove Roles for User / @ViewBag.UserName.
         </div>
         <div class="card-body">
-            @for (int i = 0; i < Model.Count; i++)
+            @for (int i = 0; i < Model.List.Count; i++)
             {
                 <div class="form-check m-1">
-                    <input type="hidden" asp-for="@Model[i].RoleId" />
-                    <input type="hidden" asp-for="@Model[i].RoleName" />
-                    <input asp-for="@Model[i].Selected" class="form-check-input" />
-                    <label class="form-check-label" asp-for="@Model[i].Selected">
-                        @Model[i].RoleName
+                    <input type="hidden" asp-for="@Model.List[i].RoleId" />
+                    <input type="hidden" asp-for="@Model.List[i].RoleName" />
+                    <input type="radio" asp-for="@Model.SelectedValue" value="@Model.List[i].RoleName" />
+                    <label class="form-check-label">
+                        @Model.List[i].RoleName
                     </label>
                 </div>
             }

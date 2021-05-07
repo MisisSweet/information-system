@@ -77,10 +77,10 @@
         </div>
         <div class="flex-xl-column">
             <div>
-                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageGenre" asp-route-bookId="@Model.Id">Manage Genre</button>
-                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageStatus" asp-route-bookId="@Model.Id">Manage Status</button>
-                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageDiscipline" asp-route-bookId="@Model.Id">Manage Discipline</button>
-                <button class="btn btn-info" asp-controller="UserRoles" asp-action="ManageSpecialty" asp-route-bookId="@Model.Id">Manage Specialty</button>
+                <a class="btn btn-info" href="@Url.Action("ManageGenre","UserRoles", new { bookId=Model.Id})">Manage Genre</a>
+                <a class="btn btn-info" href="@Url.Action("ManageStatus","UserRoles", new { bookId=Model.Id})">Manage Status</a>
+                <a class="btn btn-info" href="@Url.Action("ManageDiscipline","UserRoles", new { bookId=Model.Id})">Manage Discipline</a>
+                <a class="btn btn-info" href="@Url.Action("ManageSpecialty","UserRoles", new { bookId=Model.Id})">Manage Specialty</a>
             </div>
             <div class="mt-2">
                 <button type="submit" class="btn btn-primary" asp-action="EditB">Edit</button>

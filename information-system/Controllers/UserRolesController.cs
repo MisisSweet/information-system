@@ -32,7 +32,7 @@ namespace information_system.Controllers
             _systemContext = systemContext;
             _appEnvironment = appEnvironment;
         }
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
         {
             return View();
         }
@@ -46,28 +46,25 @@ namespace information_system.Controllers
                 return View("NotFound");
             }
             ViewBag.UserName = user.UserName;
-            var model = new List<ManageUserRolesViewModel>();
+            var model = new ManageUserRolesViewModel();
             foreach (var role in _roleManager.Roles)
             {
-                var userRolesViewModel = new ManageUserRolesViewModel
+                var userRolesViewModel = new ManageUserRolesViewModelItem
                 {
                     RoleId = role.Id,
                     RoleName = role.Name
                 };
                 if (await _userManager.IsInRoleAsync(user, role.Name))
                 {
-                    userRolesViewModel.Selected = true;
+                    model.SelectedValue = role.Name;
                 }
-                else
-                {
-                    userRolesViewModel.Selected = false;
-                }
-                model.Add(userRolesViewModel);
+
+                model.List.Add(userRolesViewModel);
             }
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> Manage(List<ManageUserRolesViewModel> model, string userId)
+        public async Task<IActionResult> Manage(ManageUserRolesViewModel model, string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
@@ -81,7 +78,7 @@ namespace information_system.Controllers
                 ModelState.AddModelError("", "Cannot remove user existing roles");
                 return View(model);
             }
-            result = await _userManager.AddToRolesAsync(user, model.Where(x => x.Selected).Select(y => y.RoleName));
+            result = await _userManager.AddToRoleAsync(user, model.SelectedValue);
             if (!result.Succeeded)
             {
                 ModelState.AddModelError("", "Cannot add selected roles to user");
@@ -146,7 +143,7 @@ namespace information_system.Controllers
                     }
                 }
             }
-            return View(model);
+            return View(model); 
         }
         [HttpGet]
         public async Task<IActionResult> EditUser(string userId)
@@ -182,6 +179,7 @@ namespace information_system.Controllers
             }
             return Json(result);
         }
+        [HttpPost]
         public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
@@ -195,15 +193,26 @@ namespace information_system.Controllers
                     user.LastName = model.LastName;
                     user.NumderReadTicket = model.NumderReadTicket;
                     user.PhoneNumber = model.PhoneNumber;
+                    user.GroupNumber = model.GroupNumber;
 
-                    string path = @"/files/img/" + user.UserName + Path.GetExtension(file.FileName);
-                    if (!string.IsNullOrEmpty(user.ProfilePicture))
-                        System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
-                    using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                    string path = user.ProfilePicture;
+
+                    if (!string.IsNullOrEmpty(user.ProfilePicture) && file != null)
                     {
-                        await file.CopyToAsync(fileStream);
-                        user.ProfilePicture = path;
+                        System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+                        path = "";
                     }
+
+                    if (file != null)
+                    {
+                        path = @"/files/img/" + user.UserName + Path.GetExtension(file.FileName);
+                        using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+                        {
+                            await file.CopyToAsync(fileStream);
+                        }
+                    }
+
+                    user.ProfilePicture = path;
 
                     var result = await _userManager.UpdateAsync(user);
                     if (result.Succeeded)
@@ -389,8 +398,11 @@ namespace information_system.Controllers
                     book.Year = model.Year;
 
                     string path = book.BookPicture;
-                    if (!string.IsNullOrEmpty(book.BookPicture) && file!=null)
+                    if (!string.IsNullOrEmpty(book.BookPicture) && file != null)
+                    {
                         System.IO.File.Delete(_appEnvironment.WebRootPath + book.BookPicture);
+                        path = "";
+                    }
                     if (file != null)
                     {
                         path = @"/files/book/" + book.Name + DateTime.Now.ToString("ddMMyyyyHHmmss") + Path.GetExtension(file.FileName);
@@ -498,37 +510,33 @@ namespace information_system.Controllers
         public IActionResult ManageStatus(int bookId)
         {
             ViewBag.bookId = bookId;
-            var book = _systemContext.Books.FirstOrDefault(c => c.Id == bookId);
+            var book = _systemContext.Books.Include(c=>c.Status).FirstOrDefault(c => c.Id == bookId);
             if (book == null)
             {
                 ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
                 return View("NotFound");
             }
             ViewBag.BookName = book.Name;
-            var model = new List<ManageStatusViewModel>();
+            var model = new ManageStatusViewModel();
+         
             foreach (var status in _systemContext.Statuses)
             {
-                var manageStatusViewModel = new ManageStatusViewModel
-                {
-                    StatusId = status.Id,
-                    StatusName = status.StatusName,
-                    Selected = status.StatusName.Equals(book.Status.StatusName),
-                };
-                model.Add(manageStatusViewModel);
+                if (status.StatusName.Equals(book.Status.StatusName))
+                    model.SelectedValue = status.StatusName;
+                model.List.Add(status);
             }
             return View(model);
         }
         [HttpPost]
-        public IActionResult ManageStatus(List<ManageStatusViewModel> model, int bookId)
+        public IActionResult ManageStatus(ManageStatusViewModel model, int bookId)
         {
             var book = _systemContext.Books.FirstOrDefault(b => b.Id == bookId);
             if (book == null)
             {
                 return View();
             }
-            var stat = model.Where(x => x.Selected).ToList()[0];
-            var status = _systemContext.Statuses.FirstOrDefault(s => s.Id == stat.StatusId);
-            book.Status = status;
+            var stat = model.List.FirstOrDefault(c => c.StatusName.Equals(model.SelectedValue));
+            book.Status = stat;
                 _systemContext.SaveChanges();
             return RedirectToAction("EditBook", new { bookId = bookId });
         }
