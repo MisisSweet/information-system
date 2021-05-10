@@ -1,7 +1,13 @@
-﻿<h1>Admin Panel</h1>
+﻿@inject UserManager<User> UserManager
+@{ 
+    bool isAdmin = await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "SuperAdmin");
+}
+<h1>Admin Panel</h1>
 <div>
     <form method="post">
-        <button type="submit" class="btn btn-info" asp-controller="RoleManager" asp-action="Index">Role Manager</button>
+        @if (isAdmin) {
+            <button type="submit" class="btn btn-info" asp-controller="RoleManager" asp-action="Index">Role Manager</button>
+        }
         <button type="submit" class="btn btn-primary" asp-controller="UserRoles" asp-action="CreateUser">Create User</button>
     </form>
     <table class="table table-striped" id="tableu">
@@ -37,6 +43,7 @@
                 <th>Discipline</th>
                 <th>Specialty</th>
                 <th>Status</th>
+                <th>Count</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -70,9 +77,12 @@
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
-                            return ` <a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
+                            return '@(isAdmin)' === '@true'?
+                            `<a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
                             <a class="btn btn-primary" href="/UserRoles/EditP?userId=${data}">Edit Pass</a>
                             <a class="btn btn-info" href="/UserRoles/Manage?userId=${data}">Manage Roles</a>
+                            <a class="btn btn-danger" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>` :
+                            `<a class="btn btn-primary" href="/UserRoles/EditUser?userId=${data}">Edit</a>
                             <a class="btn btn-danger" href="@Url.Action("DeleteUser","UserRoles")?userId=${data}">Delete</a>`;
                         }
                     }],
@@ -97,10 +107,11 @@
                         { data: 'bookDiscs' },
                         { data: 'bookSpecs' },
                         { data: 'status.statusName' },
+                        { data: 'count' },
                         { data: 'id' },
                     ],
                     columnDefs: [{
-                        targets: 9,
+                        targets: 10,
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {

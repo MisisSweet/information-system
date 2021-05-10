@@ -1,0 +1,132 @@
+﻿@model Book
+@inject UserManager<User> userManager
+@inject SignInManager<User> SignInManager
+@{
+    User user = await userManager.GetUserAsync(User);
+}
+<style>
+    img {
+        width: 320px;
+        height: 320px;
+        object-fit: cover;
+        border-radius: 30px
+    }
+</style>
+<div class="d-flex">
+    <img src="@Model.BookPicture" />
+    <div>
+        <h2>@Model.Name</h2>
+        <label>Жанры: </label>
+        <div class="d-flex">
+            @foreach (var s in Model.BookGenres.Select(b => b.Genre.GenreName))
+            {
+                <label class="card bg-info m-1">
+                    @s
+                </label>
+            }
+        </div>
+        <label>Дисциплины: </label>
+        <div class="d-flex">
+            @foreach (var s in Model.BookDiscs.Select(b => b.Discipline.NameDiscipline))
+            {
+                <label class="card bg-info m-1">
+                    @s
+                </label>
+            }
+        </div>
+        <label>Специальности: </label>
+        <div class="d-flex">
+            @foreach (var s in Model.BookSpecs.Select(b => b.Specialty.NameSpecialty))
+            {
+                <label class="card bg-info m-1">
+                    @s
+                </label>
+            }
+        </div>
+        <label>Автор: @Model.Author</label>
+    </div>
+</div>
+<div>
+    <p>Count:@Model.Count</p>
+    <p class="text">@Model.Description</p>
+</div>
+@if (SignInManager.IsSignedIn(User))
+{
+<div id="dialog">
+    <p>Книга: @Model.Name</p>
+    <p>Автор: @Model.Author</p>
+    <p>Вы: @(user.FirstName + ' ' +user.LastName)</p>
+    <p>Студенчекский: @user.NumderReadTicket</p>
+    <p>Все верно?</p>
+</div>
+    <div id="dialogMessage">
+        <p id="message"></p>
+    </div>
+
+    <button id="opener">Подать заявку</button>
+}
+<link href="~/lib/jqueryui/jquery-ui.css" rel="stylesheet" />
+
+<script src='@Url.Content("~/lib/jquery/dist/jquery.js")' type="text/javascript"></script>
+<script src="~/lib/jqueryui/jquery-ui.js"></script>
+<script>
+    var a = $("#dialog");
+    var messageDialoge = $("#dialogMessage");
+
+    let statusOp = false;
+
+    function InitPage() {
+        a.dialog({
+            autoOpen: false,
+            title: 'Заявка на книгу',
+            modal: true,
+            buttons: [{
+                text: "OK", click: function () {
+                    console.log('@user.Id')
+                    $.ajax({
+                        type: "Post",
+                        url: '@Url.Action("AddLoan", "Catalog")',
+                        data: {
+                            idBook: '@Model.Id',
+                            idUser: '@user.Id',
+                        },
+                        success: function (data) {
+                            statusOp = data;
+                            console.log(data);
+                            if (data) {
+                                $('#message').text('Заявка отправлена');
+                            } else {
+                                $('#message').text('Возникла ошибка');
+                            }
+                            a.dialog("close");
+                            messageDialoge.dialog("open");
+                        },
+                    });
+
+                },
+            },
+            { text: "Отмена", click: function () { a.dialog("close") } }],
+
+        });
+        messageDialoge.dialog({
+            autoOpen: false,
+            title: 'Сообщение',
+            modal: true,
+            buttons: [{
+                text: "OK", click: function () {
+                    if (statusOp) {
+                        document.location.href = '@Url.Action("Index","Catalog")';
+                    } else {
+                        messageDialoge.dialog("close")
+                    }
+                }
+            }],
+
+        });
+        $("#opener").click(function () {
+            a.dialog("open");
+        });
+
+    }
+    InitPage();
+</script>

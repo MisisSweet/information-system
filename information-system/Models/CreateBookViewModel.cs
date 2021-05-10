@@ -29,5 +29,7 @@ namespace information_system.Models
         public string Discipline { get; set; }
         public string Specialty { get; set; }
         public List<string> Chapters { get; set; }
+        [Display(Name = "Count")]
+        public int Count { get; set; }
     }
 }

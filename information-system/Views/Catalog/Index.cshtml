@@ -1,0 +1,237 @@
+﻿@model List<Book>
+
+<style>
+    .list {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        flex-wrap: wrap;
+    }
+
+    .card-item {
+        max-width: 350px;
+        flex-direction: column;
+        margin: 5px !important;
+    }
+
+        .card-item img {
+            width: 320px;
+            height: 320px;
+            object-fit: cover;
+            border-radius: 30px
+        }
+
+    .list-item {
+        display: flex;
+        flex-direction: row;
+        margin: 5px 0;
+    }
+
+        .list-item img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 30px
+        }
+
+    .text {
+        display: block;
+        max-height: 50px;
+        height: 50px;
+        overflow: hidden;
+    }
+</style>
+
+<div>
+    <div class="">
+        <div class="d-flex">
+            <label>Сменить вид на </label>
+            <button id="changeVBtn" class="m-1" onclick="changeViewList(this)">Список</button>
+        </div>
+        <div class="form-group ">
+            <label>Жанры: </label>
+            <input name='genre' class='textbody' style="border-radius: 5px !important">
+        </div>
+        <div class="form-group ">
+            <label>Дисцилины</label>
+            <input name='discipline' class='textbody' style="border-radius: 5px !important">
+        </div>
+        <div class="form-group ">
+            <label>Специальности</label>
+            <input name='specialty' class='textbody' style="border-radius: 5px !important">
+        </div>
+        <div class="form-group ">
+            <label>Автор</label>
+            <input name='author' class='textbody' style="border-radius: 5px !important">
+        </div>
+        <button class="btn btn-primary" onclick="filter()">Фильтр</button>
+    </div>
+    <div id="catalog" class="list">
+    </div>
+    <div id="buttonPagePanle"> 
+        
+    </div>
+</div>
+
+<script src='@Url.Content("~/lib/jquery/dist/jquery.js")' type="text/javascript"></script>
+<script>
+    var inputG = document.querySelector('input[name=genre]');
+    var inputD = document.querySelector('input[name=discipline]');
+    var inputS = document.querySelector('input[name=specialty]')
+    var inputA = document.querySelector('input[name=author]')
+
+    var currentPage = 0;
+
+    async function loadGenre() {
+        var responseGenre = await fetch('@Url.Action("GetGenre","UserRoles")');
+        genres = await responseGenre.json();
+        // init Tagify script on the above inputs
+        console.log(genres);
+        var tagify = new Tagify(inputG, {
+            whitelist: genres.map(function (item) { return item.genreName; }),
+            enforceWhitelist: true,
+            dropdown: {
+                position: "input",
+                enabled: 0 // always opens dropdown when input gets focus
+            }
+        })
+    }
+    async function loadDisciplene() {
+        var responseDiscipline = await fetch('@Url.Action("GetDiscipline", "UserRoles")');
+        disciplines = await responseDiscipline.json();
+        // init Tagify script on the above inputs
+        console.log(disciplines);
+        var tagify = new Tagify(inputD, {
+            whitelist: disciplines.map(function (item) { return item.nameDiscipline; }),
+            enforceWhitelist: true,
+            dropdown: {
+                position: "input",
+                enabled: 0 // always opens dropdown when input gets focus
+            }
+        })
+    }
+    async function loadSpecialty() {
+        var responseSpecialty = await fetch('@Url.Action("GetSpecialty", "UserRoles")');
+        specialities = await responseSpecialty.json();
+        // init Tagify script on the above inputs
+        console.log(specialities);
+        var tagify = new Tagify(inputS, {
+            whitelist: specialities.map(function (item) { return item.nameSpecialty; }),
+            enforceWhitelist: true,
+            dropdown: {
+                position: "input",
+                enabled: 0 // always opens dropdown when input gets focus
+            }
+        })
+    }
+
+    function catalogItemAdd(item) {
+        let className = $('#catalog').hasClass('list') ? 'card-item' :'list-item'
+        $('#catalog').append(`
+                    <div class="${className} card">
+                        <img src="${item.bookPicture}" />
+                        <div>
+                            <h4><a href="@(Url.Action("Book"))?id=${item.id}">${item.name}</a></h4>
+                            <div class="d-flex">
+                                ${item.bookGenres.map((item) => `
+                                    <label class="card bg-info m-1" >
+                                        ${item.genre.genreName}
+                                    </label>`)}
+                            </div>
+                            <label>Автор: ${item.author}</label>
+                            <div class="d-flex">
+                                <label>Дисциплины: </label>
+                                 ${item.bookDiscs.map((item) => `
+                                    <label class="card bg-info m-1" >
+                                        ${item.discipline.nameDiscipline}
+                                    </label>`)}
+                            </div>
+                            <div class="d-flex">
+                                <label>Специальности: </label>
+                                    ${item.bookSpecs.map((item) => `
+                                    <label class="card bg-info m-1" >
+                                        ${item.specialty.nameSpecialty}
+                                    </label>`)}
+                            </div>
+                            <div>
+                                <p class="text">${item.description}</p>
+                                <p>Count:${item.count}</p>
+                            </div>
+                        </div>
+                    </div>
+                    `);
+    }
+
+    InitPage();
+    async function InitPage() {
+        let listV = window.localStorage.getItem('list');
+        if (!listV) {
+            changeViewList(document.getElementById('changeVBtn'));
+        }
+
+        await loadSpecialty();
+        await loadGenre();
+        await loadDisciplene();
+
+        filter();
+    }
+
+    function changeViewList(e) {
+        let curV = '';
+
+        if ($('#catalog').hasClass('list')) {
+            $('#catalog').removeClass('list');
+            $('.card-item').addClass('list-item');
+            $('.list-item').removeClass('card-item');
+
+            e.textContent = 'Таблица';
+        }
+        else {
+            curV = 'list';
+            $('#catalog').addClass(curV);
+            $('.list-item').addClass('card-item');
+            $('.card-item').removeClass('list-item');
+            e.textContent = 'Список';
+        }
+
+        localStorage.setItem('listV', curV);
+    }
+
+    function filter(page) {
+        if (page != null && page != undefined)
+            currentPage = page;
+
+        const myNode = document.getElementById("catalog");
+        console.log(myNode);
+        myNode.innerHTML = '';
+        $.ajax({
+                type: "Get",
+            url: '@Url.Action("GetBooks", "Catalog")',
+            data: {
+                author: inputA.value,
+                genre: inputG.value,
+                discipline: inputD.value,
+                specialty: inputS.value,
+                currentPage: currentPage,
+            },
+                success: function (data) {
+                    console.log(data);
+
+                    data.books.forEach((item) => {
+                        catalogItemAdd(item);
+                    })
+
+
+                    document.getElementById('buttonPagePanle').innerHTML = '';
+
+                    let startNumber = 0;
+                    if (data.currentPage > 2) startNumber = data.currentPage - 2;
+                    if (data.currentPage > data.countPage - 2) startNumber = data.countPage - 5;
+                    if (startNumber < 0) startNumber = 0;
+                    for (let i = startNumber; i < startNumber + 5 && i < data.countPage; i++) {
+                        $('#buttonPagePanle').append(`<button class='btn ${i == data.currentPage ? 'btn-primary' : 'btn-outline-primary'}' onclick="filter(${i})">${i+1}</button>`);
+                    }
+                }
+            });
+    }
+</script>

@@ -26,21 +26,16 @@
                     <partial name="_LoginPartial" />
                     @if (SignInManager.IsSignedIn(User))
                     {
-                        @if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.SuperAdmin.ToString()))
+                        @if (!(await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.Student.ToString())))
                         {
-                            <ul class="navbar-nav flex-grow-1">
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">Admin Panel</a>
-                                </li>
-                            </ul>
-                        }
-                        @if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.Employee.ToString()))
-                        {
-                            <ul class="navbar-nav flex-grow-1">
-                                <li class="nav-item">
-                                    <a class="nav-link text-dark" asp-area="" asp-controller="EmployeePanel" asp-action="Index">Admin Panel</a>
-                                </li>
-                            </ul>
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">Admin Panel</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Catalog</a>
+                    </li>
+                </ul>
                         }
                     }
                 </div>

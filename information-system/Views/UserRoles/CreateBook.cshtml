@@ -43,6 +43,11 @@
                 <input asp-for="Articl" class="form-control" />
                 <span asp-validation-for="Articl" class="text-danger"></span>
             </div>
+            <div class="form-group">
+                <label asp-for="Count"></label>
+                <input asp-for="Count" class="form-control" />
+                <span asp-validation-for="Count" class="text-danger"></span>
+            </div>
             <button type="submit" class="btn btn-primary" asp-action="CreateB">Create</button>
             <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
         </div>

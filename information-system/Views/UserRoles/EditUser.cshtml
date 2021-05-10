@@ -1,4 +1,15 @@
 ﻿@model EditUserViewModel
+@inject UserManager<User> UserManager
+@{
+    bool isAdmin = await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "SuperAdmin");
+}
+
+<style>
+    .visible-0 {
+        position: absolute;
+        top: -1000px;
+    }
+</style>
 <h1>Edit User</h1>
 <form method="post" asp-controller="UserRoles" enctype="multipart/form-data">
     <div class="row">
@@ -7,12 +18,12 @@
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            <div class="form-group">
+            <div class="form-group @(!isAdmin?"visible-0":"")">
                 <label asp-for="Email"></label>
                 <input asp-for="Email" class="form-control" />
                 <span asp-validation-for="Email" class="text-danger"></span>
             </div>
-            <div class="form-group">
+            <div class="form-group @(!isAdmin?"visible-0":"")">
                 <label asp-for="Username"></label>
                 <input asp-for="Username" class="form-control" />
                 <span asp-validation-for="Username" class="text-danger"></span>

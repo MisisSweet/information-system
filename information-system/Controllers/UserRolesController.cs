@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace information_system.Controllers
 {
-    [Authorize(Roles = "SuperAdmin")]
+    [Authorize(Roles = "SuperAdmin,Employee")]
     public class UserRolesController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -312,6 +312,7 @@ namespace information_system.Controllers
                     Articl = model.Articl,
                     Description = model.Description,
                     Year = model.Year,
+                    Count=model.Count,
                 };
 
                 List<Chapter> chapters = new List<Chapter>();
@@ -380,6 +381,7 @@ namespace information_system.Controllers
                 Description = book.Description,
                 Year = book.Year,
                 BookPicture = book.BookPicture,
+                Count=book.Count,
                 Chapters = book.Chapters.Select(c => c.Name).ToList()
             };
             return View(model);
@@ -396,6 +398,7 @@ namespace information_system.Controllers
                     book.Articl = model.Articl;
                     book.Description = model.Description;
                     book.Year = model.Year;
+                    book.Count = model.Count;
 
                     string path = book.BookPicture;
                     if (!string.IsNullOrEmpty(book.BookPicture) && file != null)

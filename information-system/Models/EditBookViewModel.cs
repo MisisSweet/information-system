@@ -27,5 +27,7 @@ namespace information_system.Models
         [Display(Name = "Book picture")]
         public string BookPicture { get; set; }
         public List<string> Chapters { get; set; }
+        [Display(Name = "Count")]
+        public int Count { get; set; }
     }
 }
