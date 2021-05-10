@@ -13,11 +13,9 @@ namespace information_system.Models.Data
         public string Description { get; set; }
         public int Year { get; set; }
         public string Articl { get; set; }
-        public int StatusId { get; set; }
         public string BookPicture { get; set; }
         public int Count { get; set; }
 
-        public virtual Status Status { get; set; }
         public virtual ICollection<BookGenre> BookGenres { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
         public virtual ICollection<BookDisc> BookDiscs { get; set; }

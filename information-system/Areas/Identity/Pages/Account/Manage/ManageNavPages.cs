@@ -21,6 +21,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
         public static string ExternalLogins => "ExternalLogins";
 
         public static string PersonalData => "PersonalData";
+        public static string Loans => "Loans";
 
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
 
@@ -39,6 +40,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
         public static string PersonalDataNavClass(ViewContext viewContext) => PageNavClass(viewContext, PersonalData);
 
         public static string TwoFactorAuthenticationNavClass(ViewContext viewContext) => PageNavClass(viewContext, TwoFactorAuthentication);
+        public static string LoansClass(ViewContext viewContext) => PageNavClass(viewContext, Loans);
 
         private static string PageNavClass(ViewContext viewContext, string page)
         {

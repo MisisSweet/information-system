@@ -1,4 +1,6 @@
-﻿using information_system.Models;
+﻿using information_system.Data;
+using information_system.Models;
+using information_system.Models.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,15 +14,19 @@ namespace information_system.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly SystemContext _context;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, SystemContext context)
         {
             _logger = logger;
+            _context = context;
         }
 
         public IActionResult Index()
         {
-            return View();
+            List<Book> books = _context.Books.Skip(Math.Max(0, _context.Books.Count() - 5)).ToList();
+            List<Work> works = _context.Works.ToList();
+            return View(new HomeModel() { Books = books, Works = works});
         }
 
         public IActionResult Privacy()

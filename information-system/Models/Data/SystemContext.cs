@@ -33,5 +33,7 @@ namespace information_system.Data
         public DbSet<Discipline> Disciplines { get; set; }
         public DbSet<BookDisc> BookDiscs { get; set; }
         public DbSet<BookSpec> BookSpecs { get; set; }
+        public DbSet<Loan> Loans { get; set; }
+        public DbSet<Work> Works { get; set; }
     }
 }

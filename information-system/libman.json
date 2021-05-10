@@ -10,6 +10,11 @@
       "provider": "cdnjs",
       "library": "jqueryui@1.12.1",
       "destination": "wwwroot/lib/jqueryui/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "jquery-rss@4.3.0",
+      "destination": "wwwroot/lib/jquery-rss/"
     }
   ]
 }

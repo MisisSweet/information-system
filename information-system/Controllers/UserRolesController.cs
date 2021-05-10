@@ -102,13 +102,13 @@ namespace information_system.Controllers
         [HttpGet]
         public JsonResult ReturnBook()
         {
-            List<Book> book = _systemContext.Books.Include(b => b.Status)
+            List<Book> book = _systemContext.Books
                 .Include(b => b.BookGenres)
                     .ThenInclude(bk => bk.Genre)
-                .Include(b=>b.BookDiscs)
-                    .ThenInclude(bd=>bd.Discipline)
-                .Include(b=>b.BookSpecs)
-                    .ThenInclude(bs=>bs.Specialty)
+                .Include(b => b.BookDiscs)
+                    .ThenInclude(bd => bd.Discipline)
+                .Include(b => b.BookSpecs)
+                    .ThenInclude(bs => bs.Specialty)
                 .ToList();
             return Json(book);
         }
@@ -127,7 +127,7 @@ namespace information_system.Controllers
                     FirstName = model.FirstName,
                     LastName = model.LastName,
                     NumderReadTicket = model.NumderReadTicket,
-                    GroupNumber=model.GroupNumber
+                    GroupNumber = model.GroupNumber
                 };
                 var result = await _userManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
@@ -143,7 +143,7 @@ namespace information_system.Controllers
                     }
                 }
             }
-            return View(model); 
+            return View(model);
         }
         [HttpGet]
         public async Task<IActionResult> EditUser(string userId)
@@ -163,7 +163,7 @@ namespace information_system.Controllers
                 NumderReadTicket = user.NumderReadTicket,
                 PhoneNumber = user.PhoneNumber,
                 ProfilePicture = user.ProfilePicture,
-                GroupNumber=user.GroupNumber
+                GroupNumber = user.GroupNumber
             };
             return View(model);
         }
@@ -299,7 +299,7 @@ namespace information_system.Controllers
             if (ModelState.IsValid)
             {
                 string[] _genre = (from t in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Genre) select t["value"]).ToArray();
-                string[] _specialty = (from s in JsonConvert.DeserializeObject<Dictionary<string,string>[]>(model.Specialty) select s["value"]).ToArray();
+                string[] _specialty = (from s in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Specialty) select s["value"]).ToArray();
                 string[] _discipline = (from d in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Discipline) select d["value"]).ToArray();
                 List<Genre> genres = _systemContext.Genres.Where(g => _genre.Contains(g.GenreName)).ToList();
                 List<Specialty> specialties = _systemContext.Specialties.Where(s => _specialty.Contains(s.NameSpecialty)).ToList();
@@ -312,7 +312,7 @@ namespace information_system.Controllers
                     Articl = model.Articl,
                     Description = model.Description,
                     Year = model.Year,
-                    Count=model.Count,
+                    Count = model.Count,
                 };
 
                 List<Chapter> chapters = new List<Chapter>();
@@ -327,11 +327,6 @@ namespace information_system.Controllers
                 }
                 book.Chapters = chapters;
 
-                Status status = _systemContext.Statuses.FirstOrDefault(c => c.StatusName.ToLower().Contains("в наличии"));
-                if (status == null)
-                    status = _systemContext.Statuses.First();
-
-                book.Status = status;
 
                 string path = "";
                 if (!string.IsNullOrEmpty(book.BookPicture))
@@ -352,11 +347,11 @@ namespace information_system.Controllers
                 {
                     _systemContext.BookGenres.Add(new BookGenre() { Book = book, Genre = genre });
                 }
-                foreach(Discipline disc in disciplines)
+                foreach (Discipline disc in disciplines)
                 {
                     _systemContext.BookDiscs.Add(new BookDisc() { Book = book, Discipline = disc });
                 }
-                foreach(Specialty spec in specialties)
+                foreach (Specialty spec in specialties)
                 {
                     _systemContext.BookSpecs.Add(new BookSpec() { Book = book, Specialty = spec });
                 }
@@ -381,7 +376,7 @@ namespace information_system.Controllers
                 Description = book.Description,
                 Year = book.Year,
                 BookPicture = book.BookPicture,
-                Count=book.Count,
+                Count = book.Count,
                 Chapters = book.Chapters.Select(c => c.Name).ToList()
             };
             return View(model);
@@ -447,7 +442,7 @@ namespace information_system.Controllers
                             });
                         }
                     }
-                        _systemContext.SaveChanges();
+                    _systemContext.SaveChanges();
                     return RedirectToAction("Index");
                 }
             }
@@ -487,66 +482,65 @@ namespace information_system.Controllers
         [HttpPost]
         public IActionResult ManageGenre(List<ManageGenreViewModel> model, int bookId)
         {
-            var book = _systemContext.Books.Include(g => g.BookGenres).ThenInclude(g => g.Genre).FirstOrDefault(b=>b.Id==bookId);
+            var book = _systemContext.Books.Include(g => g.BookGenres).ThenInclude(g => g.Genre).FirstOrDefault(b => b.Id == bookId);
             if (book == null)
             {
                 return View();
             }
             List<String> genres = book.BookGenres.Select(c => c.Genre.GenreName).ToList();
-            foreach(BookGenre bookGenre in book.BookGenres)
+            foreach (BookGenre bookGenre in book.BookGenres)
             {
                 _systemContext.Entry(bookGenre).State = EntityState.Deleted;
             }
             var gen = model.Where(x => x.Selected).ToList();
-            foreach(var g in gen)
+            foreach (var g in gen)
             {
                 BookGenre newBookGenre = new BookGenre
                 {
                     Book = book,
-                    GenreId=g.GenreId
+                    GenreId = g.GenreId
                 };
                 _systemContext.BookGenres.Add(newBookGenre);
             }
             _systemContext.SaveChanges();
-            return RedirectToAction("EditBook", new { bookId= bookId });
+            return RedirectToAction("EditBook", new { bookId = bookId });
         }
-        public IActionResult ManageStatus(int bookId)
+        public IActionResult ManageStatus(int loanId)
         {
-            ViewBag.bookId = bookId;
-            var book = _systemContext.Books.Include(c=>c.Status).FirstOrDefault(c => c.Id == bookId);
-            if (book == null)
+            ViewBag.loanId = loanId;
+            var loan = _systemContext.Loans.Include(c => c.Status).FirstOrDefault(c => c.Id == loanId);
+            if (loan == null)
             {
-                ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
+                ViewBag.ErrorMessage = $"Loan with Id = {loanId} cannot be found";
                 return View("NotFound");
             }
-            ViewBag.BookName = book.Name;
             var model = new ManageStatusViewModel();
-         
+
             foreach (var status in _systemContext.Statuses)
             {
-                if (status.StatusName.Equals(book.Status.StatusName))
+                if (status.StatusName.Equals(loan.Status.StatusName))
                     model.SelectedValue = status.StatusName;
                 model.List.Add(status);
             }
             return View(model);
         }
         [HttpPost]
-        public IActionResult ManageStatus(ManageStatusViewModel model, int bookId)
+        public IActionResult ManageStatus(ManageStatusViewModel model, int loanId)
         {
-            var book = _systemContext.Books.FirstOrDefault(b => b.Id == bookId);
-            if (book == null)
+            var loan = _systemContext.Loans.FirstOrDefault(b => b.Id == loanId);
+            if (loan == null)
             {
                 return View();
             }
             var stat = model.List.FirstOrDefault(c => c.StatusName.Equals(model.SelectedValue));
-            book.Status = stat;
-                _systemContext.SaveChanges();
-            return RedirectToAction("EditBook", new { bookId = bookId });
+            loan.Status = stat;
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
         }
         public IActionResult ManageDiscipline(int bookId)
         {
             ViewBag.bookId = bookId;
-            var book = _systemContext.Books.Include(d=>d.BookDiscs).ThenInclude(db=>db.Discipline).FirstOrDefault(c => c.Id == bookId);
+            var book = _systemContext.Books.Include(d => d.BookDiscs).ThenInclude(db => db.Discipline).FirstOrDefault(c => c.Id == bookId);
             if (book == null)
             {
                 ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
@@ -593,7 +587,7 @@ namespace information_system.Controllers
                 BookDisc newBookDisc = new BookDisc
                 {
                     Book = book,
-                    DisciplineId=d.DisciplineId
+                    DisciplineId = d.DisciplineId
                 };
                 _systemContext.BookDiscs.Add(newBookDisc);
             }
@@ -603,7 +597,7 @@ namespace information_system.Controllers
         public IActionResult ManageSpecialty(int bookId)
         {
             ViewBag.bookId = bookId;
-            var book = _systemContext.Books.Include(b=>b.BookSpecs).ThenInclude(s=>s.Specialty).FirstOrDefault(c => c.Id == bookId);
+            var book = _systemContext.Books.Include(b => b.BookSpecs).ThenInclude(s => s.Specialty).FirstOrDefault(c => c.Id == bookId);
             if (book == null)
             {
                 ViewBag.ErrorMessage = $"Book with Id = {bookId} cannot be found";
@@ -650,7 +644,7 @@ namespace information_system.Controllers
                 BookSpec newBookSpec = new BookSpec
                 {
                     Book = book,
-                    SpecialtyId=s.SpecialtyId
+                    SpecialtyId = s.SpecialtyId
                 };
                 _systemContext.BookSpecs.Add(newBookSpec);
             }
@@ -670,7 +664,7 @@ namespace information_system.Controllers
             return Json(_systemContext.Genres.ToArray());
         }
         [HttpGet]
-        public  JsonResult GetDiscipline()
+        public JsonResult GetDiscipline()
         {
             return Json(_systemContext.Disciplines.ToArray());
         }
@@ -678,6 +672,58 @@ namespace information_system.Controllers
         public JsonResult GetSpecialty()
         {
             return Json(_systemContext.Specialties.ToArray());
+        }
+        [HttpGet]
+        public JsonResult GetLoan()
+        {
+            List<Loan> result = _systemContext.Loans
+                .Include(u => u.User)
+                .Include(b => b.Book)
+                .Include(s => s.Status).ToList();
+            return Json(result);
+        }
+        public JsonResult GetLoanByUserId(string userId)
+        {
+            List<Loan> result = _systemContext.Loans
+                .Include(b => b.Book)
+                .Include(s => s.Status).Where(l => l.UserId.Equals(userId)).ToList();
+            return Json(result);
+        }
+        [HttpGet]
+        public IActionResult DeleteLoan(int loanId)
+        {
+            Loan loan = _systemContext.Loans.Include(l => l.Status).Include(l => l.Book).FirstOrDefault(l => l.Id == loanId);
+            Status old = loan.Status;
+            loan.Status = _systemContext.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("отменена"));
+            if (old.StatusName.ToLower().Equals("в пользовании"))
+                loan.Book.Count++;
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult AcceptLoan(int loanId)
+        {
+            Loan loan = _systemContext.Loans.Include(l => l.Status).Include(l => l.Book).FirstOrDefault(l => l.Id == loanId);
+            if (loan.Book.Count > 0)
+            {
+                loan.Status = _systemContext.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("в пользовании"));
+                loan.Book.Count--;
+                _systemContext.SaveChanges();
+            }
+
+
+            return RedirectToAction("Index");
+        }
+        [HttpGet]
+        public IActionResult ReturnLoan(int loanId)
+        {
+            Loan loan = _systemContext.Loans.Include(l => l.Status).Include(l => l.Book).FirstOrDefault(l => l.Id == loanId);
+            Status old = loan.Status;
+            loan.Status = _systemContext.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("возвращено"));
+            if(old.StatusName.ToLower().Equals("в пользовании"))
+                loan.Book.Count++;
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
         }
     }
 }

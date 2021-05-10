@@ -175,15 +175,10 @@ namespace information_system.Migrations
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StatusId")
-                        .HasColumnType("int");
-
                     b.Property<int>("Year")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StatusId");
 
                     b.ToTable("Books");
                 });
@@ -307,6 +302,36 @@ namespace information_system.Migrations
                     b.ToTable("Genres");
                 });
 
+            modelBuilder.Entity("information_system.Models.Data.Loan", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("StatusId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Loans");
+                });
+
             modelBuilder.Entity("information_system.Models.Data.Specialty", b =>
                 {
                     b.Property<int>("Id")
@@ -420,6 +445,36 @@ namespace information_system.Migrations
                     b.ToTable("AspNetUsers");
                 });
 
+            modelBuilder.Entity("information_system.Models.Data.Work", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("PauseEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("PauseStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("WorkEnd")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("WorkStart")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("isWork")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Works");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -471,19 +526,10 @@ namespace information_system.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("information_system.Models.Data.Book", b =>
-                {
-                    b.HasOne("information_system.Models.Data.Status", "Status")
-                        .WithMany()
-                        .HasForeignKey("StatusId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("information_system.Models.Data.BookDisc", b =>
                 {
                     b.HasOne("information_system.Models.Data.Book", "Book")
-                        .WithMany()
+                        .WithMany("BookDiscs")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -513,7 +559,7 @@ namespace information_system.Migrations
             modelBuilder.Entity("information_system.Models.Data.BookSpec", b =>
                 {
                     b.HasOne("information_system.Models.Data.Book", "Book")
-                        .WithMany()
+                        .WithMany("BookSpecs")
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -532,6 +578,25 @@ namespace information_system.Migrations
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("information_system.Models.Data.Loan", b =>
+                {
+                    b.HasOne("information_system.Models.Data.Book", "Book")
+                        .WithMany()
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("information_system.Models.Data.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("information_system.Models.Data.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId");
                 });
 #pragma warning restore 612, 618
         }

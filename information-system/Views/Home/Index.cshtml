@@ -1,8 +1,92 @@
-﻿@{
+﻿@using System;
+
+@model HomeModel
+@{
     ViewData["Title"] = "Home Page";
 }
+<style>
+    .rss-item img {
+        width: 200px;
+        height: 200px;
+        object-fit: contain;
+    }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    td img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+    }
+</style>
+<div class="d-flex">
+    <div>
+        <table class="table table-striped" id="tableb">
+            <thead>
+                <tr>
+                    <th>Picture</th>
+                    <th>Book Name</th>
+                    <th>Autor</th>
+                    <th>Count</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.Books)
+                {
+                    <tr>
+                        <td><img src="@i.BookPicture" /></td>
+                        <td>@i.Name</td>
+                        <td>@i.Author</td>
+                        <td>@i.Count</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div id="rss-feeds"></div>
+    </div>
+    <div>
+        <table class="table table-striped" id="tableb">
+            <thead>
+                <tr>
+                    <th>Day week</th>
+                    <th>Work Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var i in Model.Works)
+                {
+                    <tr>
+                        <td>@((DayOfWeek)i.DayOfWeek)</td>
+                        <td>
+                            @if (i.isWork)
+                            {
+                                <p>
+                                    Work: @(i.WorkStart.TimeOfDay.ToString()) - @(i.WorkEnd.TimeOfDay.ToString()) <br />
+                                    Lunch @(i.PauseStart.TimeOfDay.ToString()) - @(i.PauseEnd.TimeOfDay.ToString())
+
+                                </p>
+                            }
+                            else
+                            {
+                                <p>Don't work</p>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/jquery-rss/jquery.rss.min.js"></script>
+<script>
+    $("#rss-feeds").rss("https://www.polessu.by/taxonomy/term/11/feed", {
+        limit: 10,
+        layoutTemplate: "<div class='rss-container'>{entries}</div>",
+        entryTemplate: `<div class='rss-item'>
+            <img src="{teaserImageUrl}"/>
+            <a href={url}>[{author} {date}] {title}</a><br/>
+            {shortBodyPlain}
+        </div>`,
+    });
+</script>

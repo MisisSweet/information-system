@@ -28,7 +28,7 @@ namespace information_system.Controllers
 
         public JsonResult GetBooks(FilterModel model)
         {
-            const int countOnPage = 1;
+            const int countOnPage = 10;
 
             string[] _genre = new string[0];
             string[] _specialty = new string[0];
@@ -92,14 +92,28 @@ namespace information_system.Controllers
                     .ThenInclude(bd => bd.Discipline)
                 .Include(b => b.BookSpecs).
                     ThenInclude(bs => bs.Specialty)
-                    .FirstOrDefault(b=>b.Id==id));
+                    .FirstOrDefault(b => b.Id == id));
         }
 
         [Authorize]
         [HttpPost]
-        public JsonResult AddLoan(int idBook,string idUser)
+        public JsonResult AddLoan(int idBook, string idUser)
         {
-            return Json(true);
+            Status status = _context.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("в обработке"));
+            Loan loan = _context.Loans.FirstOrDefault(t => t.UserId == idUser && t.BookId == idBook && t.StatusId == status.Id);
+            if (loan == null)
+            {
+                _context.Loans.Add(new Loan()
+                {
+                    BookId = idBook,
+                    UserId = idUser,
+                    Status = status,
+                    Date = DateTime.Now
+                });
+                _context.SaveChanges();
+                return Json(true);
+            }
+            return Json(false);
         }
     }
 }

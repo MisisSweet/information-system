@@ -1,0 +1,99 @@
+﻿@page
+@model information_system.Areas.Identity.Pages.Account.Manage.LoanModel
+@inject UserManager<User> userManager
+<style>
+    img {
+        width: 50px;
+        height: 50px;
+        object-fit: cover;
+    }
+</style>
+<table class="table table-striped" id="tablel">
+    <thead>
+        <tr>
+            <th>Date</th>
+            <th>Book Img</th>
+            <th>Book Name</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+</table>
+<script src='@Url.Content("~/lib/jquery/dist/jquery.js")' type="text/javascript"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.js"></script>
+<script>
+        InitPage();
+        function InitPage() {
+            $.ajax({
+                type: "Get",
+                url: '@Url.Action("GetLoanByUserId", "UserRoles",new { userId = userManager.GetUserId(User)})',
+                success: function (data) {
+                    let data1 = [];
+                    data.forEach(e => {
+                        if (e.status.statusName.toLowerCase() !== 'отменена' && e.status.statusName.toLowerCase() !== 'возвращено') 
+                            data1.push(e);
+                        })
+
+                    $('#tablel').DataTable({
+                        data: data1,
+                        columns: [
+                            { data: 'date' },
+                            { data:'book.bookPicture'},
+                            { data: 'book.name' },
+                            { data: 'status.statusName' },
+                            { data: 'id' }
+
+                        ],
+                        columnDefs: [{
+                            targets: 0,
+                            render: function (data, type, row, meta) {
+                                var date = new Date(data);
+                                var dd = date.getDate();
+                                if (dd < 10) dd = '0' + dd;
+
+                                var mm = date.getMonth() + 1;
+                                if (mm < 10) mm = '0' + mm;
+
+                                var yy = date.getFullYear();
+                                if (yy < 10) yy = '0' + yy;
+
+                                return dd + '.' + mm + '.' + yy + ' ' + date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds();
+                            }
+                        },
+                            {
+                                targets: 1,
+                                orderable: false,
+                                render: function (data, type, row, meta) {
+                                    return `<img src="${data}"/>`;
+                                }
+                            },
+                        {
+                            targets:4 ,
+                            orderable: false,
+                            render: function (data, type, row, meta) {
+                                if (row.status.statusName.toLowerCase() !== 'в пользовании') {
+                                    return `<button type="button" class="btn btn-danger" onClick="deleteLoan(${data})">Cancle</button >`;
+                                }
+                                return '';
+                            }
+                        }],
+                        order: [[0, 'desc']]
+                    })
+                }
+            });
+    }
+
+    function deleteLoan(data) {
+        $.ajax({
+            type: "Get",
+            url: '@Url.Action("DeleteLoan", "UserRoles")',
+            data: {
+                loanId: data,
+            },
+            success: function (data) {
+                document.location.reload();
+            }
+        });
+    }
+
+</script>

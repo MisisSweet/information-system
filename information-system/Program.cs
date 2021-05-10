@@ -29,6 +29,122 @@ namespace information_system
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
                     await ContextSeed.SeedRolesAsync(userManager, roleManager);
                     await ContextSeed.SeedSuperAdminAsync(userManager, roleManager);
+
+                    Status status = context.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("в обработке"));
+                    if (status == null)
+                    {
+                        context.Statuses.Add(new Status() { StatusName = "В обработке" });
+                        context.SaveChanges();
+                    }
+                    status = context.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("отменена"));
+                    if (status == null)
+                    {
+                        context.Statuses.Add(new Status() { StatusName = "Отменена" });
+                        context.SaveChanges();
+                    }
+                    status = context.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("в пользовании"));
+                    if (status == null)
+                    {
+                        context.Statuses.Add(new Status() { StatusName = "В пользовании" });
+                        context.SaveChanges();
+                    }
+                    status = context.Statuses.FirstOrDefault(s => s.StatusName.ToLower().Equals("возвращено"));
+                    if (status == null)
+                    {
+                        context.Statuses.Add(new Status() { StatusName = "возвращено" });
+                        context.SaveChanges();
+                    }
+
+                    Work work = context.Works.FirstOrDefault(w => w.DayOfWeek == 1);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 1,
+                            isWork = true,
+                            WorkStart = DateTime.Parse(" 08:00:00"),
+                            WorkEnd = DateTime.Parse(" 17:00:00"),
+                            PauseStart = DateTime.Parse(" 13:00:00"),
+                            PauseEnd = DateTime.Parse(" 14:00:00"),
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 2);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 2,
+                            isWork = true,
+                            WorkStart = DateTime.Parse(" 08:00:00"),
+                            WorkEnd = DateTime.Parse(" 17:00:00"),
+                            PauseStart = DateTime.Parse(" 13:00:00"),
+                            PauseEnd = DateTime.Parse(" 14:00:00"),
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 3);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 3,
+                            isWork = true,
+                            WorkStart = DateTime.Parse(" 08:00:00"),
+                            WorkEnd = DateTime.Parse(" 17:00:00"),
+                            PauseStart = DateTime.Parse(" 13:00:00"),
+                            PauseEnd = DateTime.Parse(" 14:00:00"),
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 4);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 4,
+                            isWork = true,
+                            WorkStart = DateTime.Parse(" 08:00:00"),
+                            WorkEnd = DateTime.Parse(" 17:00:00"),
+                            PauseStart = DateTime.Parse(" 13:00:00"),
+                            PauseEnd = DateTime.Parse(" 14:00:00"),
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 5);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 5,
+                            isWork = true,
+                            WorkStart = DateTime.Parse(" 08:00:00"),
+                            WorkEnd = DateTime.Parse(" 17:00:00"),
+                            PauseStart = DateTime.Parse(" 13:00:00"),
+                            PauseEnd = DateTime.Parse(" 14:00:00"),
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 6);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 6,
+                            isWork = false,
+                        });
+                        context.SaveChanges();
+                    }
+                    work = context.Works.FirstOrDefault(w => w.DayOfWeek == 0);
+                    if (work == null)
+                    {
+                        context.Works.Add(new Work()
+                        {
+                            DayOfWeek = 0,
+                            isWork = false,
+                        });
+                        context.SaveChanges();
+                    }
                 }
                 catch (Exception ex)
                 {
