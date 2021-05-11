@@ -86,13 +86,22 @@ namespace information_system.Controllers
 
         public IActionResult Book(int id)
         {
-            return View(_context.Books.Include(b => b.BookGenres)
+            Book b = _context.Books.Include(b => b.BookGenres)
                     .ThenInclude(bg => bg.Genre)
                 .Include(b => b.BookDiscs)
                     .ThenInclude(bd => bd.Discipline)
                 .Include(b => b.BookSpecs).
                     ThenInclude(bs => bs.Specialty)
-                    .FirstOrDefault(b => b.Id == id));
+                .Include(b => b.Chapters)
+                    .FirstOrDefault(b => b.Id == id);
+
+            List<Chapter> c = b.Chapters.ToList();
+            c.Sort(delegate (Chapter x, Chapter y)
+            {
+                return x.NumberChapter-y.NumberChapter;
+            });
+            b.Chapters = c;
+            return View(b);
         }
 
         [Authorize]

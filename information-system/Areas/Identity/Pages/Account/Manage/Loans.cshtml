@@ -8,14 +8,15 @@
         object-fit: cover;
     }
 </style>
+<h3> Заявки на книги</h3>
 <table class="table table-striped" id="tablel">
     <thead>
         <tr>
-            <th>Date</th>
-            <th>Book Img</th>
-            <th>Book Name</th>
-            <th>Status</th>
-            <th>Action</th>
+            <th>Дата</th>
+            <th>Изображение</th>
+            <th>Название книги</th>
+            <th>Статус</th>
+            <th> </th>
         </tr>
     </thead>
 </table>
@@ -72,7 +73,7 @@
                             orderable: false,
                             render: function (data, type, row, meta) {
                                 if (row.status.statusName.toLowerCase() !== 'в пользовании') {
-                                    return `<button type="button" class="btn btn-danger" onClick="deleteLoan(${data})">Cancle</button >`;
+                                    return `<button type="button" class="btn btn-danger" onClick="deleteLoan(${data})">Отменить</button >`;
                                 }
                                 return '';
                             }

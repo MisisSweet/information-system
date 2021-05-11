@@ -10,11 +10,11 @@
         top: -1000px;
     }
 </style>
-<h1>Edit User</h1>
+<h1>Редактирование пользователя</h1>
 <form method="post" asp-controller="UserRoles" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-4">
-            <h4>Edit a account.</h4>
+            <h4>Редактирование аккаунта.</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -53,8 +53,8 @@
                 <input asp-for="GroupNumber" class="form-control" />
                 <span asp-validation-for="GroupNumber" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary" asp-action="Edit">Edit</button>
-            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+            <button type="submit" class="btn btn-primary" asp-action="Edit">Редактировать</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Назад</button>
         </div>
         <div class="col-md-6">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>

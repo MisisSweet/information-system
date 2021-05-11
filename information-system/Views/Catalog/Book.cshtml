@@ -9,12 +9,13 @@
         width: 320px;
         height: 320px;
         object-fit: cover;
-        border-radius: 30px
+        border-radius: 30px;
+        border: solid black 1px;
     }
 </style>
 <div class="d-flex">
-    <img src="@Model.BookPicture" />
-    <div>
+    <img src="@(!string.IsNullOrEmpty(Model.BookPicture)?Model.BookPicture: "")" />
+    <div class="ml-4">
         <h2>@Model.Name</h2>
         <label>Жанры: </label>
         <div class="d-flex">
@@ -47,8 +48,13 @@
     </div>
 </div>
 <div>
-    <p>Count:@Model.Count</p>
-    <p class="text">@Model.Description</p>
+    <p>Количество: @Model.Count</p>
+    <p class="text">Описание: @Model.Description</p>
+    <label>Содержание: </label>
+    @foreach(var c in Model.Chapters)
+            {
+                <p>@c.NumberChapter. @c.Name</p>
+            }
 </div>
 @if (SignInManager.IsSignedIn(User))
 {
@@ -63,7 +69,7 @@
         <p id="message"></p>
     </div>
 
-    <button id="opener">Подать заявку</button>
+    <button id="opener" class="btn btn-primary">Подать заявку</button>
 }
 <link href="~/lib/jqueryui/jquery-ui.css" rel="stylesheet" />
 

@@ -6,8 +6,8 @@
 <form method="post">
     <div class="card">
         <div class="card-header">
-            <h2>Manage User Roles</h2>
-            Add/Remove Roles for User / @ViewBag.UserName.
+            <h2>Изменение ролей пользователя</h2>
+            Добавить/Удалить роли для пользователя / @ViewBag.UserName.
         </div>
         <div class="card-body">
             @for (int i = 0; i < Model.List.Count; i++)
@@ -24,9 +24,9 @@
             <div asp-validation-summary="All" class="text-danger"></div>
         </div>
         <div class="card-footer">
-            <input type="submit" value="Update" class="btn btn-primary"
+            <input type="submit" value="Обновить" class="btn btn-primary"
                    style="width:auto" />
-            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Назад</button>
         </div>
     </div>
 </form>

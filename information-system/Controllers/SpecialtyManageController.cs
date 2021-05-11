@@ -35,6 +35,13 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-        
+        [HttpGet]
+        public IActionResult Delete(int specId)
+        {
+            Specialty spec = _systemContext.Specialties.FirstOrDefault(d => d.Id == specId);
+            _systemContext.Remove(spec);
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }

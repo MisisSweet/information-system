@@ -13,26 +13,26 @@ namespace information_system.Models
         //[Display(Name = "Email")]
         //public string Email { get; set; }
         [Required]
-        [Display(Name = "Username")]
+        [Display(Name = "Логин")]
         public string Username { get; set; }
         [Required]
-        [Display(Name = "First Name")]
+        [Display(Name = "Имя")]
         public string FirstName { get; set; }
         [Required]
-        [Display(Name = "Last Name")]
+        [Display(Name = "Фамилия")]
         public string LastName { get; set; }
 
-        [Display(Name = "Numder read ticket")]
+        [Display(Name = "Номер читательского билета")]
         public string NumderReadTicket { get; set; }
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
         [DataType(DataType.Password)]
-        [Display(Name = "Password")]
+        [Display(Name = "Пароль")]
         public string Password { get; set; }
         [Required]
-        [Display(Name ="Role")]
+        [Display(Name ="Роль")]
         public string Role { get; set; }
-        [Display(Name = "Group Number")]
+        [Display(Name = "Номер группы")]
         public string GroupNumber { get; set; }
     }
 }

@@ -10,24 +10,24 @@ namespace information_system.Models
     {
         public int Id { get; set; }
         [Required]
-        [Display(Name = "BookName")]
+        [Display(Name = "Название книги")]
         public string BookName { get; set; }
         [Required]
-        [Display(Name = "Author")]
+        [Display(Name = "Автор")]
         public string Author { get; set; }
         [Required]
-        [Display(Name = "Description")]
+        [Display(Name = "Описание")]
         public string Description { get; set; }
         [Required]
-        [Display(Name = "Year")]
+        [Display(Name = "Год публикации")]
         public int Year { get; set; }
         [Required]
-        [Display(Name = "Articl")]
+        [Display(Name = "Артикл")]
         public string Articl { get; set; }
-        [Display(Name = "Book picture")]
+        [Display(Name = "Изображение")]
         public string BookPicture { get; set; }
         public List<string> Chapters { get; set; }
-        [Display(Name = "Count")]
+        [Display(Name = "Количество")]
         public int Count { get; set; }
     }
 }

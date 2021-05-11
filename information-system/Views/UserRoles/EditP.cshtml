@@ -1,9 +1,9 @@
 ﻿@model EditLoginPasswordViewModel
-<h1>Edit Password</h1>
+<h1>Изменить пароль</h1>
 <div class="row">
     <div class="col-md-4">
         <form method="post" asp-controller="UserRoles">
-            <h4>Create new password.</h4>
+            <h4>Создайте новый пароль.</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <input asp-for="Id" type="hidden" />
@@ -14,8 +14,8 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary" asp-action="EditPas">Edit</button>
-            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+            <button type="submit" class="btn btn-primary" asp-action="EditPas">Редактировать</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Назад</button>
         </form>
     </div>
 </div>

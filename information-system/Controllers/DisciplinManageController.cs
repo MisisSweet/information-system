@@ -35,6 +35,13 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-        
+        [HttpGet]
+        public IActionResult Delete(int discId)
+        {
+            Discipline disc = _systemContext.Disciplines.FirstOrDefault(d => d.Id == discId);
+            _systemContext.Remove(disc);
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }

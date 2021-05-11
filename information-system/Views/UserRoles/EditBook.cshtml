@@ -1,9 +1,9 @@
 ﻿@model EditBookViewModel
-<h1>Create Book</h1>
+<h1>Редактирование книги</h1>
 <form method="post" asp-controller="UserRoles" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-4">
-            <h4>Create a new book.</h4>
+            <h4>Редактирование.</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
@@ -66,7 +66,7 @@
 
 
         <div class="d-flex flex-column">
-            <button class="btn btn-info" type="button" onclick="addChapter()">Add chapter</button>
+            <button class="btn btn-info" type="button" onclick="addChapter()">Добавить главу</button>
             <div id="chapter-container" class="d-flex flex-column">
                 @foreach (string c in Model.Chapters)
                 {
@@ -81,13 +81,13 @@
         </div>
         <div class="flex-xl-column">
             <div>
-                <a class="btn btn-info" href="@Url.Action("ManageGenre","UserRoles", new { bookId=Model.Id})">Manage Genre</a>
-                <a class="btn btn-info" href="@Url.Action("ManageDiscipline","UserRoles", new { bookId=Model.Id})">Manage Discipline</a>
-                <a class="btn btn-info" href="@Url.Action("ManageSpecialty","UserRoles", new { bookId=Model.Id})">Manage Specialty</a>
+                <a class="btn btn-info" href="@Url.Action("ManageGenre","UserRoles", new { bookId=Model.Id})">Изменить жанры</a>
+                <a class="btn btn-info" href="@Url.Action("ManageDiscipline","UserRoles", new { bookId=Model.Id})">Изменить дисциплины</a>
+                <a class="btn btn-info" href="@Url.Action("ManageSpecialty","UserRoles", new { bookId=Model.Id})">Изменить специальности</a>
             </div>
             <div class="mt-2">
-                <button type="submit" class="btn btn-primary" asp-action="EditB">Edit</button>
-                <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+                <button type="submit" class="btn btn-primary" asp-action="EditB">Редактировать</button>
+                <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Назад</button>
             </div>
         </div>
     </div>

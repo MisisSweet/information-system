@@ -1,9 +1,9 @@
 ﻿@model CreateBookViewModel
-<h1>Create Book</h1>
+<h1>Создание книги</h1>
 <form method="post" asp-controller="UserRoles" enctype="multipart/form-data">
     <div class="row">
         <div class="col-md-4">
-            <h4>Create a new book.</h4>
+            <h4>Создание новой книги.</h4>
             <hr />
             <div asp-validation-summary="All" class="text-danger"></div>
             <div class="form-group">
@@ -48,8 +48,8 @@
                 <input asp-for="Count" class="form-control" />
                 <span asp-validation-for="Count" class="text-danger"></span>
             </div>
-            <button type="submit" class="btn btn-primary" asp-action="CreateB">Create</button>
-            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Back</button>
+            <button type="submit" class="btn btn-primary" asp-action="CreateB">Создать</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="">Назад</button>
         </div>
         <div class="col-md-4">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -74,7 +74,7 @@
         </div>
 
         <div class="d-flex flex-column">
-            <button class="btn btn-info" type="button" onclick="addChapter()">Add chapter</button>
+            <button class="btn btn-info" type="button" onclick="addChapter()">Добавить главу</button>
             <div id="chapter-container" class="d-flex flex-column">
             </div>
         </div>

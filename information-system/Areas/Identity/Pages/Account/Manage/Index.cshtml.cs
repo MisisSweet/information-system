@@ -42,20 +42,20 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
 
         public class InputModel
         {
-            [Display(Name = "First Name")]
+            [Display(Name = "Имя")]
             public string FirstName { get; set; }
-            [Display(Name = "Last Name")]
+            [Display(Name = "Фамилия")]
             public string LastName { get; set; }
-            [Display(Name = "Username")]
+            [Display(Name = "Логин")]
             public string Username { get; set; }
-            [Display(Name = "Numder read ticket")]
+            [Display(Name = "Номер читательскогобилета")]
             public string NumderReadTicket { get; set; }
             [Phone]
-            [Display(Name = "Phone number")]
+            [Display(Name = "Номертелефона")]
             public string PhoneNumber { get; set; }
-            [Display(Name = "Profile Picture")]
+            [Display(Name = "Изображение профиля")]
             public string ProfilePicture { get; set; }
-            [Display(Name = "Group Number")]
+            [Display(Name = "Номер группы")]
             public string GroupNumber { get; set; }
         }
 
@@ -88,7 +88,7 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-            UserNameChangeLimitMessage = $"You can change your username {user.UsernameChangeLimit} more time(s).";
+            UserNameChangeLimitMessage = $"Вы можете изменить свое имя пользователя {user.UsernameChangeLimit} раз(а).";
             await LoadAsync(user);
             return Page();
         }

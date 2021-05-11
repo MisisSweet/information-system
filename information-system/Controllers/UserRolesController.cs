@@ -322,7 +322,7 @@ namespace information_system.Controllers
                     {
                         Book = book,
                         Name = model.Chapters[i],
-                        NumberChapter = i
+                        NumberChapter = i+1
                     });
                 }
                 book.Chapters = chapters;

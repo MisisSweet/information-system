@@ -36,6 +36,13 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-       
+        [HttpGet]
+        public IActionResult Delete(int genreId)
+        {
+            Genre genre = _systemContext.Genres.FirstOrDefault(d => d.Id == genreId);
+            _systemContext.Remove(genre);
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }

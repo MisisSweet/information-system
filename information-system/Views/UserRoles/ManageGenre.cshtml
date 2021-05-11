@@ -7,8 +7,8 @@
     <input type="hidden" value="@ViewBag.bookId" name="bookId"/>
     <div class="card">
         <div class="card-header">
-            <h2>Manage Book</h2>
-            Add/Remove Book for Book / @ViewBag.BookName.
+            <h2>Изменение жанров</h2>
+            Добавить/Удалить Жанры для книги / @ViewBag.BookName.
         </div>
         <div class="card-body">
             @for (int i = 0; i < Model.Count; i++)
@@ -25,9 +25,9 @@
             <div asp-validation-summary="All" class="text-danger"></div>
         </div>
         <div class="card-footer">
-            <input type="submit" value="Update" class="btn btn-primary" 
+            <input type="submit" value="Обновить" class="btn btn-primary" 
                    style="width:auto" />
-            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="EditBook" asp-route-bookId="@ViewBag.bookId">Back</button>
+            <button class="btn btn-primary" type="submit" asp-controller="UserRoles" asp-action="EditBook" asp-route-bookId="@ViewBag.bookId">Назад</button>
         </div>
     </div>
 </form>

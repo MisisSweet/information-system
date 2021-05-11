@@ -36,6 +36,13 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
-        
+        [HttpGet]
+        public IActionResult Delete(int statusId)
+        {
+            Status status = _systemContext.Statuses.FirstOrDefault(d => d.Id == statusId);
+            _systemContext.Remove(status);
+            _systemContext.SaveChanges();
+            return RedirectToAction("Index");
+        }
     }
 }

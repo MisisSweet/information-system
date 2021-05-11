@@ -14,21 +14,21 @@ namespace information_system.Models
         [Display(Name = "Email")]
         public string Email { get; set; }
         [Required]
-        [Display(Name = "Username")]
+        [Display(Name = "Логин")]
         public string Username { get; set; }
         [Required]
-        [Display(Name = "First Name")]
+        [Display(Name = "Имя")]
         public string FirstName { get; set; }
         [Required]
-        [Display(Name = "Last Name")]
+        [Display(Name = "Фамилия")]
         public string LastName { get; set; }
-
-        [Display(Name = "Numder read ticket")]
+        [Display(Name = "Номер читательского билета")]
         public string NumderReadTicket { get; set; }
+        [Display(Name = "Номер телефона")]
         public string PhoneNumber { get; set; }
-        [Display(Name = "Profile Picture")]
+        [Display(Name = "Изображение профиля")]
         public string ProfilePicture { get; set; }
-        [Display(Name = "Group Number")]
+        [Display(Name = "Номер группы")]
         public string GroupNumber { get; set; }
     }
 }

@@ -45,12 +45,13 @@ namespace information_system.Areas.Identity.Pages.Account
         public class InputModel
         {
             [Required]
-            [Display(Name = "Email / Username")]
+            [Display(Name = "Email / Логин")]
             public string Email { get; set; }
             [Required]
             [DataType(DataType.Password)]
+            [Display(Name = "Пароль")]
             public string Password { get; set; }
-            [Display(Name = "Remember me?")]
+            [Display(Name = "Запомнить меня?")]
             public bool RememberMe { get; set; }
         }
         public bool IsValidEmail(string emailaddress)

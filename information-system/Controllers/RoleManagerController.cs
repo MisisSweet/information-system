@@ -34,7 +34,13 @@ namespace information_system.Controllers
             }
             return RedirectToAction("Index");
         }
-        
-        
+        [HttpGet]
+        public async Task<IActionResult> Delete(string roleId)
+        {
+            var roles = await _roleManager.Roles.FirstOrDefaultAsync(r=>r.Id==roleId);
+            _roleManager.DeleteAsync(roles);
+            return RedirectToAction("Index");
+        }
+
     }
 }

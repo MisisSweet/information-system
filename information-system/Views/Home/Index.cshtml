@@ -6,8 +6,8 @@
 }
 <style>
     .rss-item img {
-        width: 200px;
-        height: 200px;
+        width: 100px;
+        height: 100px;
         object-fit: contain;
     }
 
@@ -16,66 +16,65 @@
         height: 50px;
         object-fit: contain;
     }
+    .centre{
+    display: block;
+    margin: auto 10px;
+    }
 </style>
 <div class="d-flex">
-    <div>
-        <table class="table table-striped" id="tableb">
-            <thead>
-                <tr>
-                    <th>Picture</th>
-                    <th>Book Name</th>
-                    <th>Autor</th>
-                    <th>Count</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var i in Model.Books)
-                {
+    <div class="row">
+        <div class="col-md-9">
+        <h3>Новые поступления:</h3>
+            <table class="table table-striped" id="tableb">
+                <thead>
+                    <tr>
+                        <th>Изображение</th>
+                        <th>Название книги</th>
+                        <th>Автор</th>
+                        <th>Количество</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Books)
+                    {
                     <tr>
                         <td><img src="@i.BookPicture" /></td>
-                        <td>@i.Name</td>
+                        <td>
+                            <a href="@(Url.Action("Book","Catalog", new {id=i.Id }))">@i.Name</a>
+                        </td>
                         <td>@i.Author</td>
                         <td>@i.Count</td>
                     </tr>
-                }
-            </tbody>
-        </table>
-        <div id="rss-feeds"></div>
-    </div>
-    <div>
-        <table class="table table-striped" id="tableb">
-            <thead>
-                <tr>
-                    <th>Day week</th>
-                    <th>Work Time</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var i in Model.Works)
-                {
+                    }
+                </tbody>
+            </table>
+            <h3>Новости:</h3>
+            <div id="rss-feeds"></div>
+        </div>
+        <div class="col-md-3">
+        <h3>Информация о работе:</h3>
+            <table class="table table-striped " id="tableb">
+                <thead>
                     <tr>
-                        <td>@((DayOfWeek)i.DayOfWeek)</td>
-                        <td>
-                            @if (i.isWork)
-                            {
-                                <p>
-                                    Work: @(i.WorkStart.TimeOfDay.ToString()) - @(i.WorkEnd.TimeOfDay.ToString()) <br />
-                                    Lunch @(i.PauseStart.TimeOfDay.ToString()) - @(i.PauseEnd.TimeOfDay.ToString())
-
-                                </p>
-                            }
-                            else
-                            {
-                                <p>Don't work</p>
-                            }
-                        </td>
+                        <th>День недели</th>
+                        <th>Время работы</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var i in Model.Works)
+                    {
+                        <tr>
+                            <td>@i.Key</td>
+                            <td>
+                                @i.Value
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
-
 
 <script src="~/lib/jquery/dist/jquery.min.js"></script>
 <script src="~/lib/jquery-rss/jquery.rss.min.js"></script>
@@ -83,9 +82,13 @@
     $("#rss-feeds").rss("https://www.polessu.by/taxonomy/term/11/feed", {
         limit: 10,
         layoutTemplate: "<div class='rss-container'>{entries}</div>",
-        entryTemplate: `<div class='rss-item'>
-            <img src="{teaserImageUrl}"/>
-            <a href={url}>[{author} {date}] {title}</a><br/>
+        entryTemplate: `<div class='rss-item card mb-2'>
+        <div class="d-flex">
+            <img src="{teaserImageUrl}" />
+            <a href={url} class="centre">{title}</a>
+        </div>
+        [{author} {date}]
+            <br/>
             {shortBodyPlain}
         </div>`,
     });
