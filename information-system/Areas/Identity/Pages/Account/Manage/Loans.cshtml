@@ -31,7 +31,7 @@
                 success: function (data) {
                     let data1 = [];
                     data.forEach(e => {
-                        if (e.status.statusName.toLowerCase() !== 'отменена' && e.status.statusName.toLowerCase() !== 'возвращено') 
+                        if (e.status.statusName.toLowerCase() !== 'отменена' && e.status.statusName.toLowerCase() !== 'возвращено')
                             data1.push(e);
                         })
 

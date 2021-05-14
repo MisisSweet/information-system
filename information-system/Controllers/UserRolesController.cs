@@ -117,7 +117,7 @@ namespace information_system.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(CreateUserViewModel model)
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -180,7 +180,7 @@ namespace information_system.Controllers
             return Json(result);
         }
         [HttpPost]
-        public async Task<IActionResult> Edit(EditUserViewModel model, IFormFile file)
+        public async Task<IActionResult> EditUser(EditUserViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -255,7 +255,7 @@ namespace information_system.Controllers
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> EditPas(EditLoginPasswordViewModel model)
+        public async Task<IActionResult> EditP(EditLoginPasswordViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -294,7 +294,7 @@ namespace information_system.Controllers
         {
             return View(new CreateBookViewModel());
         }
-        public async Task<IActionResult> CreateB(CreateBookViewModel model, IFormFile file)
+        public async Task<IActionResult> CreateBook(CreateBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -381,7 +381,7 @@ namespace information_system.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> EditB(EditBookViewModel model, IFormFile file)
+        public async Task<IActionResult> EditBook(EditBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -658,16 +658,19 @@ namespace information_system.Controllers
             _systemContext.SaveChanges();
             return RedirectToAction("Index");
         }
+        [AllowAnonymous]
         [HttpGet]
         public JsonResult GetGenre()
         {
             return Json(_systemContext.Genres.ToArray());
         }
+        [AllowAnonymous]
         [HttpGet]
         public JsonResult GetDiscipline()
         {
             return Json(_systemContext.Disciplines.ToArray());
         }
+        [AllowAnonymous]
         [HttpGet]
         public JsonResult GetSpecialty()
         {
@@ -682,6 +685,8 @@ namespace information_system.Controllers
                 .Include(s => s.Status).ToList();
             return Json(result);
         }
+        [AllowAnonymous]
+        [HttpGet]
         public JsonResult GetLoanByUserId(string userId)
         {
             List<Loan> result = _systemContext.Loans

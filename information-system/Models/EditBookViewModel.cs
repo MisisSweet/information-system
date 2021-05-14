@@ -22,7 +22,7 @@ namespace information_system.Models
         [Display(Name = "Год публикации")]
         public int Year { get; set; }
         [Required]
-        [Display(Name = "Артикл")]
+        [Display(Name = "Артикул")]
         public string Articl { get; set; }
         [Display(Name = "Изображение")]
         public string BookPicture { get; set; }

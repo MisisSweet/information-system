@@ -26,21 +26,22 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
-                    @if (SignInManager.IsSignedIn(User))
-                    {
-                        @if (!(await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.Student.ToString())))
+                    <ul class="navbar-nav flex-grow-1">
+                        @if (SignInManager.IsSignedIn(User))
                         {
-                <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">Управление</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a>
-                    </li>
-                </ul>
+                            @if (!(await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), Roles.Student.ToString())))
+                            {
+
+                                <li class="nav-item">
+                                    <a class="nav-link text-dark" asp-area="" asp-controller="UserRoles" asp-action="Index">Управление</a>
+                                </li>
+                            }
                         }
-                    }
-                </div>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Catalog" asp-action="Index">Каталог</a>
+                        </li>
+                    </ul>
+                    </div>
             </div>
         </nav>
     </header>

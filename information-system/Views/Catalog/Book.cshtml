@@ -3,6 +3,10 @@
 @inject SignInManager<User> SignInManager
 @{
     User user = await userManager.GetUserAsync(User);
+    if (user == null)
+    {
+        user = new User();
+    }
 }
 <style>
     img {
@@ -51,20 +55,20 @@
     <p>Количество: @Model.Count</p>
     <p class="text">Описание: @Model.Description</p>
     <label>Содержание: </label>
-    @foreach(var c in Model.Chapters)
-            {
-                <p>@c.NumberChapter. @c.Name</p>
-            }
+    @foreach (var c in Model.Chapters)
+    {
+        <p>@c.NumberChapter. @c.Name</p>
+    }
 </div>
 @if (SignInManager.IsSignedIn(User))
 {
-<div id="dialog">
-    <p>Книга: @Model.Name</p>
-    <p>Автор: @Model.Author</p>
-    <p>Вы: @(user.FirstName + ' ' +user.LastName)</p>
-    <p>Студенчекский: @user.NumderReadTicket</p>
-    <p>Все верно?</p>
-</div>
+    <div id="dialog">
+        <p>Книга: @Model.Name</p>
+        <p>Автор: @Model.Author</p>
+        <p>Вы: @(user.FirstName + ' ' +user.LastName)</p>
+        <p>Номер читательского билета: @user.NumderReadTicket</p>
+        <p>Все верно?</p>
+    </div>
     <div id="dialogMessage">
         <p id="message"></p>
     </div>

@@ -9,7 +9,6 @@ namespace information_system.Models
     public class EditUserViewModel
     {
         public string Id { get; set; }
-        [Required]
         [EmailAddress]
         [Display(Name = "Email")]
         public string Email { get; set; }

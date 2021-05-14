@@ -48,10 +48,10 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             public string LastName { get; set; }
             [Display(Name = "Логин")]
             public string Username { get; set; }
-            [Display(Name = "Номер читательскогобилета")]
+            [Display(Name = "Номер читательского билета")]
             public string NumderReadTicket { get; set; }
             [Phone]
-            [Display(Name = "Номертелефона")]
+            [Display(Name = "Номер телефона")]
             public string PhoneNumber { get; set; }
             [Display(Name = "Изображение профиля")]
             public string ProfilePicture { get; set; }
@@ -144,11 +144,13 @@ namespace information_system.Areas.Identity.Pages.Account.Manage
             if (Request.Form.Files.Count > 0)
             {
                 IFormFile file = Request.Form.Files.FirstOrDefault();
+                
+                if (!string.IsNullOrEmpty(user.ProfilePicture))
+                    System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+
                 string path = @"/files/img/"+user.UserName+Path.GetExtension(file.FileName);
                 using(var fileStream = new FileStream(_appEnvironment.WebRootPath+path, FileMode.OpenOrCreate))
-                {
-                    if(!string.IsNullOrEmpty(user.ProfilePicture))
-                        System.IO.File.Delete(_appEnvironment.WebRootPath + user.ProfilePicture);
+                {    
                     await file.CopyToAsync(fileStream);
                     user.ProfilePicture = path;
                 }
