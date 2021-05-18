@@ -691,7 +691,8 @@ namespace information_system.Controllers
         {
             List<Loan> result = _systemContext.Loans
                 .Include(b => b.Book)
-                .Include(s => s.Status).Where(l => l.UserId.Equals(userId)).ToList();
+                .Include(s => s.Status)
+                .Include(b=>b.User).Where(l => l.UserId.Equals(userId)).ToList();
             return Json(result);
         }
         [HttpGet]
