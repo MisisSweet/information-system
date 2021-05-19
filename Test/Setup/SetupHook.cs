@@ -12,6 +12,10 @@ using Moq;
 using Test.Mocks;
 using MassTransit;
 using System;
+using System.Linq;
+using Test.Utilits;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Test.Setup
 {
@@ -26,9 +30,26 @@ namespace Test.Setup
             this.objectContainer=objectContainer;
         }
 
+        /// <summary>
+        /// Sets up custom value retrievers.
+        /// </summary>
+        [BeforeScenario(Order = 1)]
+        public void SetupValueRetrievers()
+        {
+            var defaultStringValueRetriever = TechTalk.SpecFlow.Assist.Service.Instance.ValueRetrievers
+                .FirstOrDefault(vr => vr is TechTalk.SpecFlow.Assist.ValueRetrievers.StringValueRetriever);
+
+            if (defaultStringValueRetriever != null)
+            {
+                TechTalk.SpecFlow.Assist.Service.Instance.ValueRetrievers.Unregister(defaultStringValueRetriever);
+                //TechTalk.SpecFlow.Assist.Service.Instance.ValueRetrievers.Register<NullStringValueRetriever>();
+            }
+        }
+        
         [BeforeTestRun]
         public static void SetupTestRun()
         {
+
             _webApplicationFactory = new WebApplicationFactory<Startup>()
                 .WithWebHostBuilder(b =>
                 {
@@ -36,6 +57,40 @@ namespace Test.Setup
                     b.ConfigureTestServices(ConfigureTestServices);
                 });
         }
+
+        /// <summary>
+        /// Injects the HTTP client into the object container.
+        /// </summary>
+        [BeforeScenario(Order = 2)]
+        public void InjectHttpClient()
+        {
+            this.objectContainer.RegisterInstanceAs(_webApplicationFactory.ClientOptions);
+            this.objectContainer.RegisterTypeAs<ScenarioContextAccessor, ScenarioContextAccessor>();
+            this.objectContainer.RegisterFactoryAs(container =>
+            {
+
+                var httpClient = container.Resolve<System.Net.Http.HttpClient>();
+
+                return new JsonHttpClient(httpClient, new Newtonsoft.Json.JsonSerializerSettings());
+            });
+            this.objectContainer.RegisterFactoryAs(container =>
+            {
+                var contextAccessor = container.Resolve<ScenarioContextAccessor>();
+                var jsonHttpClient = container.Resolve<JsonHttpClient>();
+
+                return new ScenarioSpecificJsonHttpClient(contextAccessor, jsonHttpClient);
+            });
+        }
+
+        /// <summary>
+        /// Tears down the test infrastructure.
+        /// </summary>
+        [AfterTestRun]
+        public static void TearDownTestRun()
+        {
+            _webApplicationFactory?.Dispose();
+        }
+
         [BeforeScenario(Order = 1)]
         public void InjectMocks()
         {

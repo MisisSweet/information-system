@@ -1,5 +1,6 @@
 using information_system.Data;
 using information_system.Models.Data;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
@@ -17,6 +18,7 @@ namespace information_system
     {
         public async static Task Main(string[] args)
         {
+            CreateWebHostBuilder(args).Build().Run();
             var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
@@ -70,6 +72,8 @@ namespace information_system
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+           WebHost.CreateDefaultBuilder(args)
+           .UseStartup<Startup>();
     }
 }

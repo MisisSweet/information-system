@@ -117,7 +117,7 @@ namespace information_system.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
+        public async Task<IActionResult> CreateU(CreateUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -294,7 +294,7 @@ namespace information_system.Controllers
         {
             return View(new CreateBookViewModel());
         }
-        public async Task<IActionResult> CreateBook(CreateBookViewModel model, IFormFile file)
+        public async Task<IActionResult> CreateB(CreateBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -381,7 +381,7 @@ namespace information_system.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> EditBook(EditBookViewModel model, IFormFile file)
+        public async Task<IActionResult> EditB(EditBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
