@@ -112,12 +112,13 @@ namespace information_system.Controllers
                 .ToList();
             return Json(book);
         }
+        [HttpGet]
         public IActionResult CreateUser()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> CreateU(CreateUserViewModel model)
+        public async Task<IActionResult> CreateUser(CreateUserViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -238,6 +239,7 @@ namespace information_system.Controllers
             await _userManager.DeleteAsync(user);
             return RedirectToAction("Index");
         }
+        [HttpGet]
         public async Task<IActionResult> EditP(string userId)
         {
             User user = await _userManager.FindByIdAsync(userId);
@@ -290,11 +292,13 @@ namespace information_system.Controllers
             }
             return View(model);
         }
+        [HttpGet]
         public IActionResult CreateBook()
         {
             return View(new CreateBookViewModel());
         }
-        public async Task<IActionResult> CreateB(CreateBookViewModel model, IFormFile file)
+        [HttpPost]
+        public async Task<IActionResult> CreateBook(CreateBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
@@ -358,8 +362,9 @@ namespace information_system.Controllers
                 _systemContext.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            return View(model);
         }
+        [HttpGet]
         public IActionResult EditBook(int bookId)
         {
             Book book = _systemContext.Books.Include(b => b.Chapters).FirstOrDefault(b => b.Id == bookId);
@@ -381,7 +386,8 @@ namespace information_system.Controllers
             };
             return View(model);
         }
-        public async Task<IActionResult> EditB(EditBookViewModel model, IFormFile file)
+        [HttpPost]
+        public async Task<IActionResult> EditBook(EditBookViewModel model, IFormFile file)
         {
             if (ModelState.IsValid)
             {
