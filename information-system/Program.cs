@@ -18,7 +18,7 @@ namespace information_system
     {
         public async static Task Main(string[] args)
         {
-            CreateWebHostBuilder(args).Build().Run();
+            
             var host = CreateHostBuilder(args).Build();
             using (var scope = host.Services.CreateScope())
             {
@@ -72,8 +72,6 @@ namespace information_system
                 {
                     webBuilder.UseStartup<Startup>();
                 });
-        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-           WebHost.CreateDefaultBuilder(args)
-           .UseStartup<Startup>();
+       
     }
 }

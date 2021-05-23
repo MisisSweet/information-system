@@ -50,17 +50,17 @@ namespace information_system.Controllers
             if (!string.IsNullOrEmpty(model.Genre))
             {
                 _genre = (from t in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Genre) select t["value"]).ToArray();
-                books = books.Where(b => isContains(b, _genre)).ToList();
+                books = books.Where(b => isContains(b.BookGenres.Select(c=>c.Genre.GenreName).ToArray(), _genre)).ToList();
             }
             if (!string.IsNullOrEmpty(model.Discipline))
             {
                 _discipline = (from d in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Discipline) select d["value"]).ToArray();
-                books = books.Where(b => isContains(b, _discipline)).ToList();
+                books = books.Where(b => isContains(b.BookDiscs.Select(c => c.Discipline.NameDiscipline).ToArray(), _discipline)).ToList();
             }
             if (!string.IsNullOrEmpty(model.Specialty))
             {
                 _specialty = (from s in JsonConvert.DeserializeObject<Dictionary<string, string>[]>(model.Specialty) select s["value"]).ToArray();
-                books = books.Where(b => isContains(b, _specialty)).ToList();
+                books = books.Where(b => isContains(b.BookSpecs.Select(c => c.Specialty.NameSpecialty).ToArray(), _specialty)).ToList();
             }
 
             model.Books = books;
@@ -69,12 +69,11 @@ namespace information_system.Controllers
             model.Books = model.Books.Skip(countOnPage * (model.CurrentPage)).Take(countOnPage).ToList();
             return Json(model);
         }
-        private bool isContains(Book book, string[] array2)
+        private bool isContains(string[] array1, string[] array2)
         {
-            List<string> s = book.BookGenres.Select(g => g.Genre.GenreName).ToList();
             foreach (string g in array2)
             {
-                if (!s.Contains(g))
+                if (!array1.Contains(g))
                 {
                     return false;
                 }

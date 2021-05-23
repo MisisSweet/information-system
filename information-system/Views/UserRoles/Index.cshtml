@@ -5,7 +5,7 @@
 <h1>Admin Panel</h1>
 <div>
     <h3>Пользователи</h3>
-    <form method="post">
+    <form>
         @if (isAdmin)
         {
             <button type="submit" class="btn btn-info" asp-controller="RoleManager" asp-action="Index">Управление ролями</button>
@@ -43,7 +43,6 @@
                 <th>Артикул</th>
                 <th>Жанры</th>
                 <th>Дисциплины</th>
-                <th>Специальности</th>
                 <th>Кол-во</th>
                 <th></th>
             </tr>
@@ -129,12 +128,11 @@
                         { data: 'articl' },
                         { data: 'bookGenres' },
                         { data: 'bookDiscs' },
-                        { data: 'bookSpecs' },
                         { data: 'count' },
                         { data: 'id' },
                     ],
                     columnDefs: [{
-                        targets: 9,
+                        targets: 8,
                         orderable: false,
                         className: 'button',
                         render: function (data, type, row, meta) {
@@ -164,12 +162,6 @@
                             targets: 6,
                             render: function (data, type, row, meta) {
                                 return `${data.map(item => item.discipline.nameDiscipline)}`;
-                            }
-                        },
-                        {
-                            targets: 7,
-                            render: function (data, type, row, meta) {
-                                return `${data.map(item => item.specialty.nameSpecialty)}`;
                             }
                         },
                         {
